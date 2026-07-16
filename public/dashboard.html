@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — See Before Buy AI</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F3F4F6; color: #111827; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    color: white; padding: 0 24px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header .brand { font-size: 18px; font-weight: 700; }
+  .header .shop-info { font-size: 13px; opacity: 0.85; }
+  .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .logout-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* Tabs */
+  .tabs { background: white; border-bottom: 1px solid #E5E7EB; padding: 0 24px; display: flex; gap: 0; }
+  .tab {
+    padding: 16px 24px; font-size: 15px; font-weight: 500; color: #6B7280;
+    border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: #329580; }
+  .tab.active { color: #329580; border-bottom-color: #329580; }
+
+  /* Content */
+  .content { padding: 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* Stats Grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: 12px; padding: 20px;
+    border: 1px solid #E5E7EB; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .stat-card .label { font-size: 13px; color: #6B7280; font-weight: 500; margin-bottom: 8px; }
+  .stat-card .value { font-size: 28px; font-weight: 700; color: #111827; }
+  .stat-card .sub { font-size: 12px; color: #9CA3AF; margin-top: 4px; }
+
+  /* Plan banner */
+  .plan-banner {
+    background: white; border-radius: 12px; padding: 20px 24px;
+    border: 1px solid #E5E7EB; margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+  }
+  .plan-banner .plan-name { font-size: 16px; font-weight: 700; }
+  .plan-banner .plan-details { font-size: 13px; color: #6B7280; margin-top: 4px; }
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+  }
+  .badge.free { background: #F3F4F6; color: #374151; }
+  .badge.starter { background: #DBEAFE; color: #1D4ED8; }
+  .badge.growth { background: #D1FAE5; color: #065F46; }
+  .badge.pro { background: #EDE9FE; color: #5B21B6; }
+  .upgrade-btn {
+    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    color: white; border: none; padding: 10px 20px; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .upgrade-btn:hover { opacity: 0.9; }
+
+  /* Usage bar */
+  .usage-bar-wrap { background: #F3F4F6; border-radius: 6px; height: 10px; margin-top: 8px; overflow: hidden; }
+  .usage-bar { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #329580, #245b62); transition: width 0.5s; }
+
+  /* Top products table */
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+  .products-table { background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; }
+  .products-table table { width: 100%; border-collapse: collapse; }
+  .products-table th { text-align: left; padding: 12px 16px; font-size: 12px; color: #6B7280; text-transform: uppercase; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+  .products-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #F3F4F6; }
+  .products-table tr:last-child td { border-bottom: none; }
+
+  /* Plans tab */
+  .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .plan-card {
+    background: white; border-radius: 16px; padding: 28px; border: 2px solid #E5E7EB;
+    text-align: center; transition: border-color 0.2s;
+  }
+  .plan-card:hover { border-color: #329580; }
+  .plan-card.popular { border-color: #329580; position: relative; }
+  .plan-card.popular::before {
+    content: 'Most Popular';
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: #329580; color: white; font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .plan-card .plan-icon { font-size: 32px; margin-bottom: 12px; }
+  .plan-card .plan-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .plan-card .plan-price { font-size: 36px; font-weight: 800; color: #329580; margin: 12px 0; }
+  .plan-card .plan-price span { font-size: 16px; font-weight: 400; color: #6B7280; }
+  .plan-card .plan-images { font-size: 14px; color: #374151; margin-bottom: 8px; font-weight: 600; }
+  .plan-card .plan-validity { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+  .plan-card ul { text-align: left; list-style: none; margin-bottom: 24px; }
+  .plan-card ul li { font-size: 13px; color: #374151; padding: 4px 0; }
+  .plan-card ul li::before { content: '✅ '; }
+  .buy-btn {
+    width: 100%; padding: 12px; background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+    color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .buy-btn:hover { opacity: 0.9; }
+  .buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .current-plan-note { background: #F0FDF4; border: 1px solid #A7F3D0; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; color: #065F46; }
+
+  .hidden { display: none !important; }
+  .loading { text-align: center; padding: 48px; color: #6B7280; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="brand">🛍️ See Before Buy AI</div>
+    <div class="shop-info" id="shop-info">Loading...</div>
+  </div>
+  <button class="logout-btn" onclick="logout()">Sign Out</button>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('dashboard', this)">📊 Dashboard</button>
+  <button class="tab" onclick="showTab('plans', this)">💳 Plans & Billing</button>
+</div>
+
+<!-- Dashboard Tab -->
+<div class="content" id="tab-dashboard">
+  <div class="loading" id="dash-loading">Loading your dashboard...</div>
+
+  <div id="dash-content" class="hidden">
+    <!-- Plan banner -->
+    <div class="plan-banner" id="plan-banner">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="plan-name" id="plan-name">Free Plan</span>
+          <span class="badge free" id="plan-badge">FREE</span>
+        </div>
+        <div class="plan-details" id="plan-details">50 images/month</div>
+      </div>
+      <button class="upgrade-btn" onclick="showTab('plans', document.querySelectorAll('.tab')[1])">Upgrade Plan →</button>
+    </div>
+
+    <!-- Usage -->
+    <div class="stat-card" style="margin-bottom:24px;">
+      <div class="label">Image Credits Used</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <div class="value" id="usage-text">0 / 50</div>
+        <div style="font-size:13px;color:#6B7280;" id="usage-remaining">50 remaining</div>
+      </div>
+      <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar" style="width:0%"></div></div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Try-Ons Generated</div>
+        <div class="value" id="m-tryon">0</div>
+        <div class="sub">Total AI previews</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Unique Users</div>
+        <div class="value" id="m-users">0</div>
+        <div class="sub">Customers tried</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Add to Cart</div>
+        <div class="value" id="m-atc">0</div>
+        <div class="sub">After try-on</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Conversion Rate</div>
+        <div class="value" id="m-rate">0%</div>
+        <div class="sub">Try-on → Cart</div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="section-title">🏆 Top Products by Try-On</div>
+    <div class="products-table">
+      <table>
+        <thead><tr><th>#</th><th>Product</th><th>Try-Ons</th></tr></thead>
+        <tbody id="top-products-body">
+          <tr><td colspan="3" style="text-align:center;color:#9CA3AF;padding:20px;">No data yet</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Plans Tab -->
+<div class="content hidden" id="tab-plans">
+  <div id="current-plan-note" class="current-plan-note hidden"></div>
+
+  <div class="plans-grid">
+    <!-- Starter -->
+    <div class="plan-card">
+      <div class="plan-icon">⚡</div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">₹500 <span>/30 days</span></div>
+      <div class="plan-images">300 AI Try-Ons</div>
+      <div class="plan-validity">Valid for 30 days</div>
+      <ul>
+        <li>300 image generations</li>
+        <li>All product categories</li>
+        <li>Dashboard analytics</li>
+        <li>Email support</li>
+      </ul>
+      <button class="buy-btn" onclick="buyPlan('starter', this)">Buy Starter</button>
+    </div>
+
+    <!-- Growth (Popular) -->
+    <div class="plan-card popular">
+      <div class="plan-icon">🚀</div>
+      <div class="plan-name">Growth</div>
+      <div class="plan-price">₹1,000 <span>/30 days</span></div>
+      <div class="plan-images">1,000 AI Try-Ons</div>
+      <div class="plan-validity">Valid for 30 days</div>
+      <ul>
+        <li>1,000 image generations</li>
+        <li>All product categories</li>
+        <li>Dashboard analytics</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="buy-btn" onclick="buyPlan('growth', this)">Buy Growth</button>
+    </div>
+
+    <!-- Pro -->
+    <div class="plan-card">
+      <div class="plan-icon">👑</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">₹2,000 <span>/30 days</span></div>
+      <div class="plan-images">3,000 AI Try-Ons</div>
+      <div class="plan-validity">Valid for 30 days</div>
+      <ul>
+        <li>3,000 image generations</li>
+        <li>All product categories</li>
+        <li>Advanced analytics</li>
+        <li>Dedicated support</li>
+      </ul>
+      <button class="buy-btn" onclick="buyPlan('pro', this)">Buy Pro</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cashfree JS SDK -->
+<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+<script>
+const token = localStorage.getItem('sbb_token');
+if (!token) window.location.href = '/';
+
+let dashData = null;
+
+// ── Load dashboard data ──────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const res = await fetch('/api/dashboard', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (res.status === 401) { logout(); return; }
+    const data = await res.json();
+    dashData = data;
+
+    // Header
+    document.getElementById('shop-info').textContent =
+      `${data.shop.name || data.shop.domain} · ${data.shop.email}`;
+
+    // Plan banner
+    const planNames = { free: 'Free Plan', starter: 'Starter Plan', growth: 'Growth Plan', pro: 'Pro Plan' };
+    document.getElementById('plan-name').textContent = planNames[data.shop.plan] || 'Free Plan';
+    const badge = document.getElementById('plan-badge');
+    badge.textContent = (data.shop.plan || 'free').toUpperCase();
+    badge.className = `badge ${data.shop.plan || 'free'}`;
+
+    let details = `${data.usage.limit} images/month`;
+    if (data.shop.days_left !== null) details += ` · ${data.shop.days_left} days left`;
+    document.getElementById('plan-details').textContent = details;
+
+    // Usage bar
+    const pct = data.usage.limit > 0 ? Math.min(100, (data.usage.used / data.usage.limit) * 100) : 0;
+    document.getElementById('usage-text').textContent = `${data.usage.used} / ${data.usage.limit}`;
+    document.getElementById('usage-remaining').textContent = `${data.usage.remaining} remaining`;
+    document.getElementById('usage-bar').style.width = pct + '%';
+
+    // Metrics
+    document.getElementById('m-tryon').textContent = data.metrics.try_on_generated;
+    document.getElementById('m-users').textContent = data.metrics.unique_users;
+    document.getElementById('m-atc').textContent = data.metrics.add_to_cart;
+    document.getElementById('m-rate').textContent = data.metrics.add_to_cart_rate + '%';
+
+    // Top products
+    const tbody = document.getElementById('top-products-body');
+    if (data.top_products && data.top_products.length > 0) {
+      tbody.innerHTML = data.top_products.map((p, i) =>
+        `<tr><td>${i + 1}</td><td>${p.name}</td><td>${p.count}</td></tr>`
+      ).join('');
+    }
+
+    // Plans tab — show current plan note
+    if (data.shop.plan !== 'free') {
+      const note = document.getElementById('current-plan-note');
+      note.textContent = `✅ Active plan: ${planNames[data.shop.plan]} — ${data.shop.days_left || 0} days remaining with ${data.usage.remaining} images left.`;
+      note.classList.remove('hidden');
+    }
+
+    document.getElementById('dash-loading').classList.add('hidden');
+    document.getElementById('dash-content').classList.remove('hidden');
+
+  } catch (err) {
+    document.getElementById('dash-loading').textContent = 'Failed to load. Please refresh.';
+  }
+}
+
+// ── Buy plan ──────────────────────────────────────────────────────────────────
+async function buyPlan(planId, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Creating order...';
+
+  try {
+    // 1. Create Cashfree order
+    const res = await fetch('/api/payment/create-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ plan_id: planId }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create order');
+
+    // 2. Store pending order info for verification on success page
+    localStorage.setItem('sbb_pending_order', JSON.stringify({ order_id: data.order_id, plan_id: planId }));
+
+    // 3. Open Cashfree checkout
+    const cashfree = await load({
+      mode: process.env.CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+    });
+    cashfree.checkout({
+      paymentSessionId: data.payment_session_id,
+      redirectTarget: '_self',
+    });
+
+  } catch (err) {
+    alert('Payment error: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = `Buy ${planId.charAt(0).toUpperCase() + planId.slice(1)}`;
+  }
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function showTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-dashboard').classList.toggle('hidden', name !== 'dashboard');
+  document.getElementById('tab-plans').classList.toggle('hidden', name !== 'plans');
+}
+
+function logout() {
+  localStorage.removeItem('sbb_token');
+  localStorage.removeItem('sbb_shop');
+  window.location.href = '/';
+}
+
+// Load on mount
+loadDashboard();
+</script>
+</body>
+</html>
