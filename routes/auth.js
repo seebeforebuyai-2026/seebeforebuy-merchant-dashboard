@@ -1,18 +1,17 @@
 /**
- * Auth routes: POST /api/auth/login, POST /api/auth/change-password
+ * Auth routes — proxies to the live EC2 backend
+ * POST /api/auth/login
+ * POST /api/auth/change-password
+ *
+ * All DynamoDB calls happen on EC2 where IAM credentials are valid.
+ * The JWT issued by EC2 is reused here for dashboard API calls.
  */
 const express = require('express');
 const router = express.Router();
-const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { docClient, TABLES } = require('../config/dynamodb');
-const { GetCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'seebeforebuy_dashboard_2024';
-
-function hashPassword(password) {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
+const BACKEND_URL = process.env.BACKEND_URL || 'https://seebeforebuy.in';
+const JWT_SECRET  = process.env.JWT_SECRET  || 'seebeforebuy';
 
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
@@ -22,82 +21,51 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // Scan by email (shop_email) — DynamoDB doesn't have a GSI on email yet,
-    // so we search by doing a Scan. For the small number of merchants this is fine.
-    const { ScanCommand } = require('@aws-sdk/lib-dynamodb');
-    const result = await docClient.send(new ScanCommand({
-      TableName: TABLES.SHOPS,
-      FilterExpression: 'shop_email = :email',
-      ExpressionAttributeValues: { ':email': email.toLowerCase().trim() },
-    }));
-
-    if (!result.Items || result.Items.length === 0) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    const shop = result.Items[0];
-
-    // Verify password
-    const inputHash = hashPassword(password);
-    if (inputHash !== shop.password_hash) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    // Issue JWT (24h expiry)
-    const token = jwt.sign(
-      { shop_domain: shop.shop_domain, shop_email: shop.shop_email },
-      JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    console.log(`✅ Login successful: ${shop.shop_domain}`);
-
-    res.json({
-      success: true,
-      token,
-      must_change_password: !shop.password_changed,
-      shop: {
-        domain: shop.shop_domain,
-        name: shop.shop_name,
-        email: shop.shop_email,
-        plan: shop.plan_type,
-      },
+    // Call the live backend login endpoint
+    const response = await fetch(`${BACKEND_URL}/api/merchant/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data.error || 'Login failed' });
+    }
+
+    res.json(data); // pass token + shop info straight through
+
   } catch (err) {
-    console.error('❌ Login error:', err);
-    res.status(500).json({ error: 'Login failed', message: err.message });
+    console.error('❌ Login proxy error:', err.message);
+    res.status(500).json({ error: 'Cannot connect to backend. Please try again.' });
   }
 });
 
 // ── POST /api/auth/change-password ───────────────────────────────────────────
 router.post('/change-password', requireAuth, async (req, res) => {
   try {
-    const { new_password } = req.body;
-    if (!new_password || new_password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
-    }
+    const token = req.headers.authorization;
 
-    const newHash = hashPassword(new_password);
-    await docClient.send(new UpdateCommand({
-      TableName: TABLES.SHOPS,
-      Key: { shop_domain: req.shop.shop_domain },
-      UpdateExpression: 'SET password_hash = :hash, password_changed = :changed, updated_at = :now',
-      ExpressionAttributeValues: {
-        ':hash': newHash,
-        ':changed': true,
-        ':now': new Date().toISOString(),
+    const response = await fetch(`${BACKEND_URL}/api/merchant/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token, // forward JWT to backend
       },
-    }));
+      body: JSON.stringify(req.body),
+    });
 
-    res.json({ success: true, message: 'Password changed successfully' });
+    const data = await response.json();
+    res.status(response.status).json(data);
+
   } catch (err) {
-    console.error('❌ Change password error:', err);
-    res.status(500).json({ error: 'Failed to change password' });
+    console.error('❌ Change password proxy error:', err.message);
+    res.status(500).json({ error: 'Cannot connect to backend.' });
   }
 });
 
-// ── Middleware: verify JWT ────────────────────────────────────────────────────
+// ── Middleware: verify JWT (issued by EC2 backend) ────────────────────────────
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith('Bearer ')) {
