@@ -1,64 +1,36 @@
 /**
  * Dashboard data route: GET /api/dashboard
- * Returns all metrics for the logged-in merchant
+ * Fetches data from the live EC2 backend (seebeforebuy.in)
+ * so we don't duplicate DynamoDB logic here.
  */
 const express = require('express');
 const router = express.Router();
-const { docClient, TABLES } = require('../config/dynamodb');
-const { GetCommand, QueryCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
 const { requireAuth } = require('./auth');
+
+const BACKEND_URL = process.env.BACKEND_URL || 'https://seebeforebuy.in';
 
 // ── GET /api/dashboard ────────────────────────────────────────────────────────
 router.get('/', requireAuth, async (req, res) => {
   try {
     const { shop_domain } = req.shop;
 
-    // Get shop data
-    const shopResult = await docClient.send(new GetCommand({
-      TableName: TABLES.SHOPS,
-      Key: { shop_domain },
-    }));
+    // Call the live backend to get all shop data + metrics
+    const response = await fetch(`${BACKEND_URL}/api/shop-status/${shop_domain}`);
 
-    const shop = shopResult.Item;
-    if (!shop) return res.status(404).json({ error: 'Shop not found' });
-
-    // Get usage logs for stats
-    let logs = [];
-    try {
-      const logsResult = await docClient.send(new QueryCommand({
-        TableName: TABLES.USAGE_LOGS,
-        IndexName: 'shop_domain-created_at-index',
-        KeyConditionExpression: 'shop_domain = :domain',
-        ExpressionAttributeValues: { ':domain': shop_domain },
-        ScanIndexForward: false,
-        Limit: 1000,
-      }));
-      logs = logsResult.Items || [];
-    } catch {
-      // GSI may not exist in all envs — fall back to zero stats
-      logs = [];
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      return res.status(response.status).json({ error: err.message || 'Backend error' });
     }
 
-    // Calculate stats
-    const tryOnGenerated = logs.filter(l => l.event_type === 'image_generated').length;
-    const addToCart = logs.filter(l => l.event_type === 'add_to_cart').length;
-    const uniqueUsers = new Set(logs.map(l => l.session_id).filter(Boolean)).size;
-    const addToCartRate = tryOnGenerated > 0
-      ? ((addToCart / tryOnGenerated) * 100).toFixed(1)
-      : '0.0';
+    const data = await response.json();
 
-    // Top products
-    const productMap = {};
-    logs.filter(l => l.event_type === 'image_generated').forEach(l => {
-      const name = l.product_name || 'Unknown';
-      productMap[name] = (productMap[name] || 0) + 1;
-    });
-    const topProducts = Object.entries(productMap)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+    if (!data.accountExists) {
+      return res.status(404).json({ error: 'Shop not found' });
+    }
 
-    // Plan expiry (30-day from plan_activated_at)
+    const shop = data.shopStatus;
+
+    // Calculate plan expiry (30 days from plan_activated_at)
     const planExpiresAt = shop.plan_activated_at
       ? new Date(new Date(shop.plan_activated_at).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()
       : null;
@@ -66,33 +38,35 @@ router.get('/', requireAuth, async (req, res) => {
       ? Math.max(0, Math.ceil((new Date(planExpiresAt) - new Date()) / (1000 * 60 * 60 * 24)))
       : null;
 
+    // Top products — map from backend format to simpler format
+    const topProducts = (data.top_products || []).map(p => ({
+      name: p.product_name,
+      count: p.try_on_count,
+    }));
+
     res.json({
       success: true,
       shop: {
         domain: shop.shop_domain,
-        name: shop.shop_name,
+        name: shop.shop_name || shop.shop_domain,
         email: shop.shop_email,
-        plan: shop.plan_type,
+        plan: shop.plan_type || 'free',
         plan_expires_at: planExpiresAt,
         days_left: daysLeft,
         app_status: shop.app_status || 'disabled',
       },
-      usage: {
-        used: shop.images_used || 0,
-        limit: shop.images_limit || 50,
-        remaining: (shop.images_limit || 50) - (shop.images_used || 0),
-      },
+      usage: data.usage,
       metrics: {
-        try_on_generated: tryOnGenerated,
-        unique_users: uniqueUsers,
-        add_to_cart: addToCart,
-        add_to_cart_rate: parseFloat(addToCartRate),
+        try_on_generated: data.metrics?.try_on_generated || 0,
+        unique_users: data.metrics?.unique_users || 0,
+        add_to_cart: data.metrics?.add_to_cart_count || 0,
+        add_to_cart_rate: data.metrics?.add_to_cart_rate || 0,
       },
       top_products: topProducts,
     });
 
   } catch (err) {
-    console.error('❌ Dashboard error:', err);
+    console.error('❌ Dashboard error:', err.message);
     res.status(500).json({ error: 'Failed to load dashboard', message: err.message });
   }
 });
