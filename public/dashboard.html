@@ -341,10 +341,8 @@ async function buyPlan(planId, btn) {
       plan_id: planId,
     }));
 
-    // 3. Open Cashfree checkout (sandbox for TEST, production for PROD)
-    // The mode is determined by whether the payment_session_id starts with "test_"
-    const isTest = data.payment_session_id && data.payment_session_id.startsWith('test_');
-    const cashfree = await load({ mode: isTest ? 'sandbox' : 'production' });
+    // 3. Open Cashfree checkout using v3 SDK
+    const cashfree = Cashfree({ mode: 'sandbox' }); // change to 'production' when going live
 
     cashfree.checkout({
       paymentSessionId: data.payment_session_id,
