@@ -324,7 +324,7 @@ async function buyPlan(planId, btn) {
   btn.textContent = 'Creating order...';
 
   try {
-    // 1. Create Cashfree order
+    // 1. Create Cashfree order on backend
     const res = await fetch('/api/payment/create-order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -333,22 +333,30 @@ async function buyPlan(planId, btn) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to create order');
 
-    // 2. Store pending order info for verification on success page
-    localStorage.setItem('sbb_pending_order', JSON.stringify({ order_id: data.order_id, plan_id: planId }));
+    console.log('✅ Order created:', data.order_id, '| Session:', data.payment_session_id);
 
-    // 3. Open Cashfree checkout
-    const cashfree = await load({
-      mode: process.env.CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
-    });
+    // 2. Store for verification after redirect
+    localStorage.setItem('sbb_pending_order', JSON.stringify({
+      order_id: data.order_id,
+      plan_id: planId,
+    }));
+
+    // 3. Open Cashfree checkout (sandbox for TEST, production for PROD)
+    // The mode is determined by whether the payment_session_id starts with "test_"
+    const isTest = data.payment_session_id && data.payment_session_id.startsWith('test_');
+    const cashfree = await load({ mode: isTest ? 'sandbox' : 'production' });
+
     cashfree.checkout({
       paymentSessionId: data.payment_session_id,
       redirectTarget: '_self',
     });
 
   } catch (err) {
+    console.error('Payment error:', err);
     alert('Payment error: ' + err.message);
     btn.disabled = false;
-    btn.textContent = `Buy ${planId.charAt(0).toUpperCase() + planId.slice(1)}`;
+    const labels = { starter: 'Starter', growth: 'Growth', pro: 'Pro' };
+    btn.textContent = `Buy ${labels[planId] || planId}`;
   }
 }
 
