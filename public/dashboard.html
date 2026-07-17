@@ -1,414 +1,907 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — See Before Buy AI</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F3F4F6; color: #111827; min-height: 100vh; display: flex; flex-direction: column; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — See Before Buy AI</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f3f4f6;
+        color: #111827;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-  /* ── Top Header ── */
-  .header { background: #fff; border-bottom: 1px solid #E5E7EB; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-  .brand img { height: 34px; }
-  .header-right { display: flex; align-items: center; gap: 14px; }
-  .shop-info { font-size: 13px; color: #6B7280; }
-  .logout-btn { background: linear-gradient(135deg, #329580 0%, #245b62 100%); border: none; color: white; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
-  .logout-btn:hover { opacity: 0.9; }
+      /* ── Top Header ── */
+      .header {
+        background: #fff;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0 24px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+      }
+      .brand img {
+        height: 34px;
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .shop-info {
+        font-size: 13px;
+        color: #6b7280;
+      }
+      .logout-btn {
+        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+        border: none;
+        color: white;
+        padding: 7px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .logout-btn:hover {
+        opacity: 0.9;
+      }
 
-  /* ── Layout: sidebar + main ── */
-  .app-body { display: flex; flex: 1; min-height: 0; }
+      /* ── Layout: sidebar + main ── */
+      .app-body {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
 
-  /* ── Sidebar ── */
-  .sidebar { width: 220px; background: #fff; border-right: 1px solid #E5E7EB; padding: 24px 12px; flex-shrink: 0; }
-  .sidebar-label { font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.8px; padding: 0 12px; margin-bottom: 8px; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; color: #374151; cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: all 0.15s; margin-bottom: 2px; }
-  .nav-item:hover { background: #F0FDF4; color: #329580; }
-  .nav-item.active { background: linear-gradient(135deg, #329580 0%, #245b62 100%); color: #fff; }
-  .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
+      /* ── Sidebar ── */
+      .sidebar {
+        width: 220px;
+        background: #fff;
+        border-right: 1px solid #e5e7eb;
+        padding: 24px 12px;
+        flex-shrink: 0;
+      }
+      .sidebar-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 0 12px;
+        margin-bottom: 8px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        transition: all 0.15s;
+        margin-bottom: 2px;
+      }
+      .nav-item:hover {
+        background: #f0fdf4;
+        color: #329580;
+      }
+      .nav-item.active {
+        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+        color: #fff;
+      }
+      .nav-item .icon {
+        font-size: 18px;
+        width: 22px;
+        text-align: center;
+      }
 
-  /* ── Main Content ── */
-  .main { flex: 1; overflow-y: auto; padding: 28px; }
+      /* ── Main Content ── */
+      .main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 28px;
+      }
 
-  /* ── Stat Cards ── */
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat-card { background: white; border-radius: 12px; padding: 18px 20px; border: 1px solid #E5E7EB; }
-  .stat-card .label { font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
-  .stat-card .value { font-size: 28px; font-weight: 700; color: #111827; line-height: 1; }
-  .stat-card .sub { font-size: 12px; color: #9CA3AF; margin-top: 5px; }
+      /* ── Stat Cards ── */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 18px 20px;
+        border: 1px solid #e5e7eb;
+      }
+      .stat-card .label {
+        font-size: 11px;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+      }
+      .stat-card .value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+        line-height: 1;
+      }
+      .stat-card .sub {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 5px;
+      }
 
-  /* ── Plan banner ── */
-  .plan-banner { background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid #E5E7EB; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .plan-name { font-size: 15px; font-weight: 700; }
-  .plan-details { font-size: 13px; color: #6B7280; margin-top: 2px; }
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-  .badge.free { background: #F3F4F6; color: #374151; }
-  .badge.starter { background: #D1FAE5; color: #065F46; }
-  .badge.growth { background: #A7F3D0; color: #064E3B; }
-  .badge.pro { background: #6EE7B7; color: #064E3B; }
-  .upgrade-btn { background: linear-gradient(135deg, #329580 0%, #245b62 100%); color: white; border: none; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  .upgrade-btn:hover { opacity: 0.9; }
-</style>
+      /* ── Plan banner ── */
+      .plan-banner {
+        background: white;
+        border-radius: 12px;
+        padding: 16px 20px;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .plan-name {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .plan-details {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 2px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .badge.free {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .badge.starter {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .badge.growth {
+        background: #a7f3d0;
+        color: #064e3b;
+      }
+      .badge.pro {
+        background: #6ee7b7;
+        color: #064e3b;
+      }
+      .upgrade-btn {
+        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+        color: white;
+        border: none;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .upgrade-btn:hover {
+        opacity: 0.9;
+      }
 
-  /* ── Usage bar ── */
-  .usage-bar-wrap { background: #F3F4F6; border-radius: 6px; height: 8px; margin-top: 10px; overflow: hidden; }
-  .usage-bar { height: 100%; border-radius: 6px; background: linear-gradient(90deg, #329580, #245b62); transition: width 0.5s; }
+      /* ── Usage bar ── */
+      .usage-bar-wrap {
+        background: #f3f4f6;
+        border-radius: 6px;
+        height: 8px;
+        margin-top: 10px;
+        overflow: hidden;
+      }
+      .usage-bar {
+        height: 100%;
+        border-radius: 6px;
+        background: linear-gradient(90deg, #329580, #245b62);
+        transition: width 0.5s;
+      }
 
-  /* ── Section title ── */
-  .section-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #111827; display: flex; align-items: center; gap: 6px; }
+      /* ── Section title ── */
+      .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: #111827;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-  /* ── Predicted section ── */
-  .predicted-section { background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 20px; margin-bottom: 24px; }
-  .predicted-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
-  .predicted-badge { background: #D1FAE5; color: #065F46; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-  .predicted-desc { font-size: 13px; color: #6B7280; margin-bottom: 16px; line-height: 1.5; }
-  .predicted-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
-  .p-card { background: #F0FDF4; border: 1px solid #A7F3D0; border-top: 3px solid #329580; border-radius: 10px; padding: 14px; }
-  .p-card .label { font-size: 11px; color: #6B7280; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
-  .p-card .formula { font-size: 10px; color: #9CA3AF; margin-bottom: 8px; }
-  .p-card .value { font-size: 22px; font-weight: 700; color: #065F46; }
-  .p-card .sub { font-size: 11px; color: #6B7280; margin-top: 4px; }
+      /* ── Predicted section ── */
+      .predicted-section {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 20px;
+        margin-bottom: 24px;
+      }
+      .predicted-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+      .predicted-badge {
+        background: #d1fae5;
+        color: #065f46;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
+      .predicted-desc {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .predicted-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+      .p-card {
+        background: #f0fdf4;
+        border: 1px solid #a7f3d0;
+        border-top: 3px solid #329580;
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .p-card .label {
+        font-size: 11px;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 4px;
+      }
+      .p-card .formula {
+        font-size: 10px;
+        color: #9ca3af;
+        margin-bottom: 8px;
+      }
+      .p-card .value {
+        font-size: 22px;
+        font-weight: 700;
+        color: #065f46;
+      }
+      .p-card .sub {
+        font-size: 11px;
+        color: #6b7280;
+        margin-top: 4px;
+      }
 
-  /* ── Products table ── */
-  .products-table { background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; margin-bottom: 24px; }
-  .products-table table { width: 100%; border-collapse: collapse; }
-  .products-table th { text-align: left; padding: 11px 16px; font-size: 11px; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
-  .products-table td { padding: 11px 16px; font-size: 14px; border-bottom: 1px solid #F3F4F6; }
-  .products-table tr:last-child td { border-bottom: none; }
+      /* ── Products table ── */
+      .products-table {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .products-table table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .products-table th {
+        text-align: left;
+        padding: 11px 16px;
+        font-size: 11px;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .products-table td {
+        padding: 11px 16px;
+        font-size: 14px;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      .products-table tr:last-child td {
+        border-bottom: none;
+      }
 
-  /* ── Plans tab ── */
-  .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-  .plan-card { background: white; border-radius: 16px; padding: 28px; border: 2px solid #E5E7EB; text-align: center; transition: border-color 0.2s; position: relative; }
-  .plan-card:hover { border-color: #329580; }
-  .plan-card.popular { border-color: #329580; }
-  .plan-card.popular::before { content: 'Most Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #329580 0%, #245b62 100%); color: white; font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 20px; }
-  .plan-card .plan-icon { font-size: 32px; margin-bottom: 10px; }
-  .plan-card .plan-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-  .plan-card .plan-price { font-size: 36px; font-weight: 800; color: #329580; margin: 12px 0; }
-  .plan-card .plan-price span { font-size: 15px; font-weight: 400; color: #6B7280; }
-  .plan-card .plan-images { font-size: 14px; color: #374151; margin-bottom: 4px; font-weight: 600; }
-  .plan-card .plan-validity { font-size: 13px; color: #9CA3AF; margin-bottom: 20px; }
-  .plan-card ul { text-align: left; list-style: none; margin-bottom: 22px; }
-  .plan-card ul li { font-size: 13px; color: #374151; padding: 3px 0; }
-  .plan-card ul li::before { content: '✅ '; }
-  .buy-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #329580 0%, #245b62 100%); color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-  .buy-btn:hover { opacity: 0.9; }
-  .buy-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .current-plan-note { background: #F0FDF4; border: 1px solid #A7F3D0; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: #065F46; }
+      /* ── Plans tab ── */
+      .plans-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+      .plan-card {
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        border: 2px solid #e5e7eb;
+        text-align: center;
+        transition: border-color 0.2s;
+        position: relative;
+      }
+      .plan-card:hover {
+        border-color: #329580;
+      }
+      .plan-card.popular {
+        border-color: #329580;
+      }
+      .plan-card.popular::before {
+        content: "Most Popular";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 14px;
+        border-radius: 20px;
+      }
+      .plan-card .plan-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+      .plan-card .plan-name {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .plan-card .plan-price {
+        font-size: 36px;
+        font-weight: 800;
+        color: #329580;
+        margin: 12px 0;
+      }
+      .plan-card .plan-price span {
+        font-size: 15px;
+        font-weight: 400;
+        color: #6b7280;
+      }
+      .plan-card .plan-images {
+        font-size: 14px;
+        color: #374151;
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+      .plan-card .plan-validity {
+        font-size: 13px;
+        color: #9ca3af;
+        margin-bottom: 20px;
+      }
+      .plan-card ul {
+        text-align: left;
+        list-style: none;
+        margin-bottom: 22px;
+      }
+      .plan-card ul li {
+        font-size: 13px;
+        color: #374151;
+        padding: 3px 0;
+      }
+      .plan-card ul li::before {
+        content: "✅ ";
+      }
+      .buy-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .buy-btn:hover {
+        opacity: 0.9;
+      }
+      .buy-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .current-plan-note {
+        background: #f0fdf4;
+        border: 1px solid #a7f3d0;
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #065f46;
+      }
 
-  .hidden { display: none !important; }
-  .loading { text-align: center; padding: 60px; color: #6B7280; font-size: 15px; }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 60px;
+        color: #6b7280;
+        font-size: 15px;
+      }
 
-  /* ── Responsive ── */
-  @media (max-width: 768px) {
-    .sidebar { width: 60px; padding: 16px 8px; }
-    .sidebar-label, .nav-item span { display: none; }
-    .nav-item { justify-content: center; padding: 10px; }
-    .main { padding: 16px; }
-  }
-</style>
-
-</head>
-<body>
-
-<!-- ── Top Header ── -->
-<div class="header">
-  <div class="brand">
-    <img src="https://cdn.shopify.com/s/files/1/0792/0723/5783/files/download_6.png?v=1782548312" alt="See Before Buy AI">
-  </div>
-  <div class="header-right">
-    <span class="shop-info" id="shop-info"></span>
-    <button class="logout-btn" onclick="logout()">Sign Out</button>
-  </div>
-</div>
-
-<!-- ── App Body ── -->
-<div class="app-body">
-
-  <!-- ── Sidebar ── -->
-  <nav class="sidebar">
-    <div class="sidebar-label">Menu</div>
-    <button class="nav-item active" id="nav-dashboard" onclick="showTab('dashboard', this)">
-      <span class="icon">📊</span>
-      <span>Dashboard</span>
-    </button>
-    <button class="nav-item" id="nav-plans" onclick="showTab('plans', this)">
-      <span class="icon">💳</span>
-      <span>Plans & Billing</span>
-    </button>
-  </nav>
-
-  <!-- ── Main ── -->
-  <main class="main">
-
-    <!-- Dashboard Panel -->
-    <div id="panel-dashboard">
-      <div class="loading" id="dash-loading">Loading your dashboard...</div>
-
-      <div id="dash-content" class="hidden">
-
-        <!-- Plan banner -->
-        <div class="plan-banner">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <span class="plan-name" id="plan-name">Free Plan</span>
-              <span class="badge free" id="plan-badge">FREE</span>
-            </div>
-            <div class="plan-details" id="plan-details">50 images / 30 days</div>
-          </div>
-          <button class="upgrade-btn" onclick="showTab('plans', document.getElementById('nav-plans'))">Upgrade Plan →</button>
-        </div>
-
-        <!-- Usage card -->
-        <div class="stat-card" style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <span class="label" style="margin:0;">Image Credits Used</span>
-            <span style="font-size:13px;color:#6B7280;" id="usage-remaining">50 remaining</span>
-          </div>
-          <div class="value" id="usage-text" style="font-size:22px;margin-bottom:4px;">0 / 50</div>
-          <div class="usage-bar-wrap"><div class="usage-bar" id="usage-bar" style="width:0%"></div></div>
-        </div>
-
-        <!-- Current Metrics -->
-        <div class="section-title">📈 Your Current Metrics</div>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="label">Try-Ons Generated</div>
-            <div class="value" id="m-tryon">0</div>
-            <div class="sub">Total AI previews</div>
-          </div>
-          <div class="stat-card">
-            <div class="label">Unique Users</div>
-            <div class="value" id="m-users">0</div>
-            <div class="sub">Customers who tried</div>
-          </div>
-          <div class="stat-card">
-            <div class="label">Add to Cart</div>
-            <div class="value" id="m-atc">0</div>
-            <div class="sub">After try-on</div>
-          </div>
-          <div class="stat-card">
-            <div class="label">Conversion Rate</div>
-            <div class="value" id="m-rate">0%</div>
-            <div class="sub">Try-on → Cart</div>
-          </div>
-        </div>
-
-        <!-- Predicted Impact -->
-        <div class="predicted-section">
-          <div class="predicted-header">
-            <span class="section-title" style="margin:0;">🔮 Predicted Impact after 6 Months</span>
-            <span class="predicted-badge">Based on last 24h store orders</span>
-          </div>
-          <p class="predicted-desc">
-            Based on your store's daily orders, here's what See Before Buy AI could deliver at full scale.
-            8% of store orders attributed to the app · 2% conversion rate · 1.7× try-on multiplier.
-          </p>
-          <div class="predicted-grid">
-            <div class="p-card">
-              <div class="label">Orders via App</div>
-              <div class="formula">8% of store orders</div>
-              <div class="value" id="p-orders">—</div>
-              <div class="sub" id="p-orders-base">Loading...</div>
-            </div>
-            <div class="p-card">
-              <div class="label">Revenue via App</div>
-              <div class="formula">Real order revenue</div>
-              <div class="value" id="p-revenue">—</div>
-              <div class="sub" id="p-revenue-base">Loading...</div>
-            </div>
-            <div class="p-card">
-              <div class="label">Unique Users</div>
-              <div class="formula">Orders ÷ 2%</div>
-              <div class="value" id="p-users">—</div>
-              <div class="sub">Per day estimate</div>
-            </div>
-            <div class="p-card">
-              <div class="label">Try-Ons Generated</div>
-              <div class="formula">Unique users × 1.7</div>
-              <div class="value" id="p-tryons">—</div>
-              <div class="sub">Per day estimate</div>
-            </div>
-            <div class="p-card">
-              <div class="label">Revenue per Try-On</div>
-              <div class="formula">Revenue ÷ Try-ons</div>
-              <div class="value" id="p-rpt">—</div>
-              <div class="sub">Per try-on value</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Top Products -->
-        <div class="section-title">🏆 Top Products by Try-On</div>
-        <div class="products-table">
-          <table>
-            <thead><tr><th>#</th><th>Product Name</th><th>Try-Ons</th></tr></thead>
-            <tbody id="top-products-body">
-              <tr><td colspan="3" style="text-align:center;color:#9CA3AF;padding:24px;">No data yet</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div><!-- end dash-content -->
-    </div><!-- end panel-dashboard -->
-
-    <!-- Plans Panel -->
-    <div id="panel-plans" class="hidden">
-      <div id="current-plan-note" class="current-plan-note hidden"></div>
-      <div class="plans-grid">
-
-        <div class="plan-card">
-          <div class="plan-icon">⚡</div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price">₹500 <span>/30 days</span></div>
-          <div class="plan-images">300 AI Try-Ons</div>
-          <div class="plan-validity">Valid for 30 days</div>
-          <ul><li>300 image generations</li><li>All product categories</li><li>Dashboard analytics</li><li>Email support</li></ul>
-          <button class="buy-btn" onclick="buyPlan('starter', this)">Buy Starter — ₹500</button>
-        </div>
-
-        <div class="plan-card popular">
-          <div class="plan-icon">🚀</div>
-          <div class="plan-name">Growth</div>
-          <div class="plan-price">₹1,000 <span>/30 days</span></div>
-          <div class="plan-images">1,000 AI Try-Ons</div>
-          <div class="plan-validity">Valid for 30 days</div>
-          <ul><li>1,000 image generations</li><li>All product categories</li><li>Dashboard analytics</li><li>Priority support</li></ul>
-          <button class="buy-btn" onclick="buyPlan('growth', this)">Buy Growth — ₹1,000</button>
-        </div>
-
-        <div class="plan-card">
-          <div class="plan-icon">👑</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">₹2,000 <span>/30 days</span></div>
-          <div class="plan-images">3,000 AI Try-Ons</div>
-          <div class="plan-validity">Valid for 30 days</div>
-          <ul><li>3,000 image generations</li><li>All product categories</li><li>Advanced analytics</li><li>Dedicated support</li></ul>
-          <button class="buy-btn" onclick="buyPlan('pro', this)">Buy Pro — ₹2,000</button>
-        </div>
-
+      /* ── Responsive ── */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 60px;
+          padding: 16px 8px;
+        }
+        .sidebar-label,
+        .nav-item span {
+          display: none;
+        }
+        .nav-item {
+          justify-content: center;
+          padding: 10px;
+        }
+        .main {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Top Header ── -->
+    <div class="header">
+      <div class="brand">
+        <img
+          src="https://cdn.shopify.com/s/files/1/0792/0723/5783/files/download_6.png?v=1782548312"
+          alt="See Before Buy AI"
+        />
       </div>
-    </div><!-- end panel-plans -->
+      <div class="header-right">
+        <span class="shop-info" id="shop-info"></span>
+        <button class="logout-btn" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
 
-  </main>
-</div><!-- end app-body -->
+    <!-- ── App Body ── -->
+    <div class="app-body">
+      <!-- ── Sidebar ── -->
+      <nav class="sidebar">
+        <div class="sidebar-label">Menu</div>
+        <button
+          class="nav-item active"
+          id="nav-dashboard"
+          onclick="showTab('dashboard', this)"
+        >
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </button>
+        <button
+          class="nav-item"
+          id="nav-plans"
+          onclick="showTab('plans', this)"
+        >
+          <span class="icon">💳</span>
+          <span>Plans & Billing</span>
+        </button>
+      </nav>
 
-<script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+      <!-- ── Main ── -->
+      <main class="main">
+        <!-- Dashboard Panel -->
+        <div id="panel-dashboard">
+          <div class="loading" id="dash-loading">Loading your dashboard...</div>
 
-<script>
-const token = localStorage.getItem('sbb_token');
-if (!token) window.location.href = '/';
-let dashData = null;
+          <div id="dash-content" class="hidden">
+            <!-- Plan banner -->
+            <div class="plan-banner">
+              <div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 3px;
+                  "
+                >
+                  <span class="plan-name" id="plan-name">Free Plan</span>
+                  <span class="badge free" id="plan-badge">FREE</span>
+                </div>
+                <div class="plan-details" id="plan-details">
+                  50 images / 30 days
+                </div>
+              </div>
+              <button
+                class="upgrade-btn"
+                onclick="showTab('plans', document.getElementById('nav-plans'))"
+              >
+                Upgrade Plan →
+              </button>
+            </div>
 
-async function loadDashboard() {
-  try {
-    const res = await fetch('/api/dashboard', { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401) { logout(); return; }
-    const data = await res.json();
-    dashData = data;
+            <!-- Usage card -->
+            <div class="stat-card" style="margin-bottom: 20px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 4px;
+                "
+              >
+                <span class="label" style="margin: 0">Image Credits Used</span>
+                <span
+                  style="font-size: 13px; color: #6b7280"
+                  id="usage-remaining"
+                  >50 remaining</span
+                >
+              </div>
+              <div
+                class="value"
+                id="usage-text"
+                style="font-size: 22px; margin-bottom: 4px"
+              >
+                0 / 50
+              </div>
+              <div class="usage-bar-wrap">
+                <div class="usage-bar" id="usage-bar" style="width: 0%"></div>
+              </div>
+            </div>
 
-    document.getElementById('shop-info').textContent = `${data.shop.name || data.shop.domain}  ·  ${data.shop.email}`;
+            <!-- Current Metrics -->
+            <div class="section-title">📈 Your Current Metrics</div>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="label">Try-Ons Generated</div>
+                <div class="value" id="m-tryon">0</div>
+                <div class="sub">Total AI previews</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Unique Users</div>
+                <div class="value" id="m-users">0</div>
+                <div class="sub">Customers who tried</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Add to Cart</div>
+                <div class="value" id="m-atc">0</div>
+                <div class="sub">After try-on</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Conversion Rate</div>
+                <div class="value" id="m-rate">0%</div>
+                <div class="sub">Try-on → Cart</div>
+              </div>
+            </div>
 
-    const planLabels = { free: 'Free Plan', starter: 'Starter Plan', growth: 'Growth Plan', pro: 'Pro Plan' };
-    document.getElementById('plan-name').textContent = planLabels[data.shop.plan] || 'Free Plan';
-    const badge = document.getElementById('plan-badge');
-    badge.textContent = (data.shop.plan || 'free').toUpperCase();
-    badge.className = `badge ${data.shop.plan || 'free'}`;
-    let details = `${data.usage.limit} images`;
-    if (data.shop.days_left != null) details += ` · ${data.shop.days_left} days left`;
-    document.getElementById('plan-details').textContent = details;
+            <!-- Predicted Impact -->
+            <div class="predicted-section">
+              <div class="predicted-header">
+                <span class="section-title" style="margin: 0"
+                  >🔮 Predicted Impact after 6 Months</span
+                >
+                <span class="predicted-badge"
+                  >Based on last 24h store orders</span
+                >
+              </div>
+              <p class="predicted-desc">
+                Based on your store's daily orders, here's what See Before Buy
+                AI could deliver at full scale. 8% of store orders attributed to
+                the app · 2% conversion rate · 1.7× try-on multiplier.
+              </p>
+              <div class="predicted-grid">
+                <div class="p-card">
+                  <div class="label">Orders via App</div>
+                  <div class="formula">8% of store orders</div>
+                  <div class="value" id="p-orders">—</div>
+                  <div class="sub" id="p-orders-base">Loading...</div>
+                </div>
+                <div class="p-card">
+                  <div class="label">Revenue via App</div>
+                  <div class="formula">Real order revenue</div>
+                  <div class="value" id="p-revenue">—</div>
+                  <div class="sub" id="p-revenue-base">Loading...</div>
+                </div>
+                <div class="p-card">
+                  <div class="label">Unique Users</div>
+                  <div class="formula">Orders ÷ 2%</div>
+                  <div class="value" id="p-users">—</div>
+                  <div class="sub">Per day estimate</div>
+                </div>
+                <div class="p-card">
+                  <div class="label">Try-Ons Generated</div>
+                  <div class="formula">Unique users × 1.7</div>
+                  <div class="value" id="p-tryons">—</div>
+                  <div class="sub">Per day estimate</div>
+                </div>
+                <div class="p-card">
+                  <div class="label">Revenue per Try-On</div>
+                  <div class="formula">Revenue ÷ Try-ons</div>
+                  <div class="value" id="p-rpt">—</div>
+                  <div class="sub">Per try-on value</div>
+                </div>
+              </div>
+            </div>
 
-    const pct = data.usage.limit > 0 ? Math.min(100, (data.usage.used / data.usage.limit) * 100) : 0;
-    document.getElementById('usage-text').textContent = `${data.usage.used} / ${data.usage.limit}`;
-    document.getElementById('usage-remaining').textContent = `${data.usage.remaining} remaining`;
-    document.getElementById('usage-bar').style.width = pct + '%';
+            <!-- Top Products -->
+            <div class="section-title">🏆 Top Products by Try-On</div>
+            <div class="products-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Product Name</th>
+                    <th>Try-Ons</th>
+                  </tr>
+                </thead>
+                <tbody id="top-products-body">
+                  <tr>
+                    <td
+                      colspan="3"
+                      style="text-align: center; color: #9ca3af; padding: 24px"
+                    >
+                      No data yet
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- end dash-content -->
+        </div>
+        <!-- end panel-dashboard -->
 
-    document.getElementById('m-tryon').textContent = data.metrics.try_on_generated;
-    document.getElementById('m-users').textContent = data.metrics.unique_users;
-    document.getElementById('m-atc').textContent  = data.metrics.add_to_cart;
-    document.getElementById('m-rate').textContent = data.metrics.add_to_cart_rate + '%';
+        <!-- Plans Panel -->
+        <div id="panel-plans" class="hidden">
+          <div id="current-plan-note" class="current-plan-note hidden"></div>
+          <div class="plans-grid">
+            <div class="plan-card">
+              <div class="plan-icon">⚡</div>
+              <div class="plan-name">Starter</div>
+              <div class="plan-price">₹2,999 <span>/30 days</span></div>
+              <div class="plan-images">300 AI Try-Ons</div>
+              <div class="plan-validity">Valid for 30 days</div>
+              <ul>
+                <li>300 image generations</li>
+                <li>All product categories</li>
+                <li>Dashboard analytics</li>
+                <li>Email support</li>
+              </ul>
+              <button class="buy-btn" onclick="buyPlan('starter', this)">
+                Buy Starter — ₹500
+              </button>
+            </div>
 
-    const tbody = document.getElementById('top-products-body');
-    if (data.top_products && data.top_products.length > 0) {
-      tbody.innerHTML = data.top_products.map((p, i) =>
-        `<tr><td style="color:#9CA3AF;">${i+1}</td><td>${p.name}</td><td><strong>${p.count}</strong></td></tr>`
-      ).join('');
-    }
+            <div class="plan-card popular">
+              <div class="plan-icon">🚀</div>
+              <div class="plan-name">Growth</div>
+              <div class="plan-price">₹4,999 <span>/30 days</span></div>
+              <div class="plan-images">1,000 AI Try-Ons</div>
+              <div class="plan-validity">Valid for 30 days</div>
+              <ul>
+                <li>1,000 image generations</li>
+                <li>All product categories</li>
+                <li>Dashboard analytics</li>
+                <li>Priority support</li>
+              </ul>
+              <button class="buy-btn" onclick="buyPlan('growth', this)">
+                Buy Growth — ₹1,000
+              </button>
+            </div>
 
-    if (data.shop.plan !== 'free') {
-      const note = document.getElementById('current-plan-note');
-      note.textContent = `✅ Active: ${planLabels[data.shop.plan]} — ${data.shop.days_left || 0} days left · ${data.usage.remaining} images remaining`;
-      note.classList.remove('hidden');
-    }
+            <div class="plan-card">
+              <div class="plan-icon">👑</div>
+              <div class="plan-name">Pro</div>
+              <div class="plan-price">₹2,000 <span>/30 days</span></div>
+              <div class="plan-images">3,000 AI Try-Ons</div>
+              <div class="plan-validity">Valid for 30 days</div>
+              <ul>
+                <li>3,000 image generations</li>
+                <li>All product categories</li>
+                <li>Advanced analytics</li>
+                <li>Dedicated support</li>
+              </ul>
+              <button class="buy-btn" onclick="buyPlan('pro', this)">
+                Buy Pro — ₹2,000
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- end panel-plans -->
+      </main>
+    </div>
+    <!-- end app-body -->
 
-    document.getElementById('dash-loading').classList.add('hidden');
-    document.getElementById('dash-content').classList.remove('hidden');
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 
-    loadPredictedImpact(data.shop.domain);
-  } catch (err) {
-    document.getElementById('dash-loading').textContent = 'Failed to load. Please refresh.';
-    console.error(err);
-  }
-}
+    <script>
+      const token = localStorage.getItem("sbb_token");
+      if (!token) window.location.href = "/";
+      let dashData = null;
 
-async function loadPredictedImpact(shopDomain) {
-  try {
-    const res = await fetch(`https://seebeforebuy.in/api/shop-status/${shopDomain}/predicted-impact`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-    const p = data.predicted;
-    const s = data.store_last_24h;
-    document.getElementById('p-orders').textContent  = p.orders_via_app;
-    document.getElementById('p-revenue').textContent = '₹' + p.revenue_via_app.toLocaleString('en-IN');
-    document.getElementById('p-users').textContent   = p.unique_users.toLocaleString('en-IN');
-    document.getElementById('p-tryons').textContent  = p.try_ons_generated.toLocaleString('en-IN');
-    document.getElementById('p-rpt').textContent     = '₹' + p.revenue_per_try_on;
-    document.getElementById('p-orders-base').textContent  = `Store: ${s.total_orders} orders / last 24h`;
-    document.getElementById('p-revenue-base').textContent = `Store: ₹${s.total_revenue.toLocaleString('en-IN')} / last 24h`;
-  } catch (err) {
-    console.error('Predicted impact:', err.message);
-    ['p-orders','p-revenue','p-users','p-tryons','p-rpt'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.textContent = '0';
-    });
-    const b = document.getElementById('p-orders-base');
-    if (b) b.textContent = 'Sync orders to unlock predictions';
-  }
-}
+      async function loadDashboard() {
+        try {
+          const res = await fetch("/api/dashboard", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.status === 401) {
+            logout();
+            return;
+          }
+          const data = await res.json();
+          dashData = data;
 
-async function buyPlan(planId, btn) {
-  const original = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Creating order...';
-  try {
-    const res = await fetch('/api/payment/create-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ plan_id: planId }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed');
-    localStorage.setItem('sbb_pending_order', JSON.stringify({ order_id: data.order_id, plan_id: planId }));
-    const cashfree = Cashfree({ mode: 'sandbox' });
-    cashfree.checkout({ paymentSessionId: data.payment_session_id, redirectTarget: '_self' });
-  } catch (err) {
-    alert('Payment error: ' + err.message);
-    btn.disabled = false; btn.textContent = original;
-  }
-}
+          document.getElementById("shop-info").textContent =
+            `${data.shop.name || data.shop.domain}  ·  ${data.shop.email}`;
 
-function showTab(name, el) {
-  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('panel-dashboard').classList.toggle('hidden', name !== 'dashboard');
-  document.getElementById('panel-plans').classList.toggle('hidden', name !== 'plans');
-}
+          const planLabels = {
+            free: "Free Plan",
+            starter: "Starter Plan",
+            growth: "Growth Plan",
+            pro: "Pro Plan",
+          };
+          document.getElementById("plan-name").textContent =
+            planLabels[data.shop.plan] || "Free Plan";
+          const badge = document.getElementById("plan-badge");
+          badge.textContent = (data.shop.plan || "free").toUpperCase();
+          badge.className = `badge ${data.shop.plan || "free"}`;
+          let details = `${data.usage.limit} images`;
+          if (data.shop.days_left != null)
+            details += ` · ${data.shop.days_left} days left`;
+          document.getElementById("plan-details").textContent = details;
 
-function logout() {
-  localStorage.removeItem('sbb_token');
-  localStorage.removeItem('sbb_shop');
-  window.location.href = '/';
-}
+          const pct =
+            data.usage.limit > 0
+              ? Math.min(100, (data.usage.used / data.usage.limit) * 100)
+              : 0;
+          document.getElementById("usage-text").textContent =
+            `${data.usage.used} / ${data.usage.limit}`;
+          document.getElementById("usage-remaining").textContent =
+            `${data.usage.remaining} remaining`;
+          document.getElementById("usage-bar").style.width = pct + "%";
 
-loadDashboard();
-</script>
-</body>
+          document.getElementById("m-tryon").textContent =
+            data.metrics.try_on_generated;
+          document.getElementById("m-users").textContent =
+            data.metrics.unique_users;
+          document.getElementById("m-atc").textContent =
+            data.metrics.add_to_cart;
+          document.getElementById("m-rate").textContent =
+            data.metrics.add_to_cart_rate + "%";
+
+          const tbody = document.getElementById("top-products-body");
+          if (data.top_products && data.top_products.length > 0) {
+            tbody.innerHTML = data.top_products
+              .map(
+                (p, i) =>
+                  `<tr><td style="color:#9CA3AF;">${i + 1}</td><td>${p.name}</td><td><strong>${p.count}</strong></td></tr>`,
+              )
+              .join("");
+          }
+
+          if (data.shop.plan !== "free") {
+            const note = document.getElementById("current-plan-note");
+            note.textContent = `✅ Active: ${planLabels[data.shop.plan]} — ${data.shop.days_left || 0} days left · ${data.usage.remaining} images remaining`;
+            note.classList.remove("hidden");
+          }
+
+          document.getElementById("dash-loading").classList.add("hidden");
+          document.getElementById("dash-content").classList.remove("hidden");
+
+          loadPredictedImpact(data.shop.domain);
+        } catch (err) {
+          document.getElementById("dash-loading").textContent =
+            "Failed to load. Please refresh.";
+          console.error(err);
+        }
+      }
+
+      async function loadPredictedImpact(shopDomain) {
+        try {
+          const res = await fetch(
+            `https://seebeforebuy.in/api/shop-status/${shopDomain}/predicted-impact`,
+          );
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+          const p = data.predicted;
+          const s = data.store_last_24h;
+          document.getElementById("p-orders").textContent = p.orders_via_app;
+          document.getElementById("p-revenue").textContent =
+            "₹" + p.revenue_via_app.toLocaleString("en-IN");
+          document.getElementById("p-users").textContent =
+            p.unique_users.toLocaleString("en-IN");
+          document.getElementById("p-tryons").textContent =
+            p.try_ons_generated.toLocaleString("en-IN");
+          document.getElementById("p-rpt").textContent =
+            "₹" + p.revenue_per_try_on;
+          document.getElementById("p-orders-base").textContent =
+            `Store: ${s.total_orders} orders / last 24h`;
+          document.getElementById("p-revenue-base").textContent =
+            `Store: ₹${s.total_revenue.toLocaleString("en-IN")} / last 24h`;
+        } catch (err) {
+          console.error("Predicted impact:", err.message);
+          ["p-orders", "p-revenue", "p-users", "p-tryons", "p-rpt"].forEach(
+            (id) => {
+              const el = document.getElementById(id);
+              if (el) el.textContent = "0";
+            },
+          );
+          const b = document.getElementById("p-orders-base");
+          if (b) b.textContent = "Sync orders to unlock predictions";
+        }
+      }
+
+      async function buyPlan(planId, btn) {
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Creating order...";
+        try {
+          const res = await fetch("/api/payment/create-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ plan_id: planId }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Failed");
+          localStorage.setItem(
+            "sbb_pending_order",
+            JSON.stringify({ order_id: data.order_id, plan_id: planId }),
+          );
+          const cashfree = Cashfree({ mode: "sandbox" });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: "_self",
+          });
+        } catch (err) {
+          alert("Payment error: " + err.message);
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      }
+
+      function showTab(name, el) {
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((t) => t.classList.remove("active"));
+        el.classList.add("active");
+        document
+          .getElementById("panel-dashboard")
+          .classList.toggle("hidden", name !== "dashboard");
+        document
+          .getElementById("panel-plans")
+          .classList.toggle("hidden", name !== "plans");
+      }
+
+      function logout() {
+        localStorage.removeItem("sbb_token");
+        localStorage.removeItem("sbb_shop");
+        window.location.href = "/";
+      }
+
+      loadDashboard();
+    </script>
+  </body>
 </html>
