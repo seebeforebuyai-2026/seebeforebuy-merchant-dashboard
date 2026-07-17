@@ -365,8 +365,9 @@ async function loadDashboard() {
 async function loadPredictedImpact(shopDomain) {
   try {
     const res = await fetch(`https://seebeforebuy.in/api/shop-status/${shopDomain}/predicted-impact`);
-    if (!res.ok) throw new Error('Not available');
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
     const p = data.predicted;
     const s = data.store_last_24h;
 
@@ -375,16 +376,17 @@ async function loadPredictedImpact(shopDomain) {
     document.getElementById('p-users').textContent   = p.unique_users.toLocaleString('en-IN');
     document.getElementById('p-tryons').textContent  = p.try_ons_generated.toLocaleString('en-IN');
     document.getElementById('p-rpt').textContent     = '₹' + p.revenue_per_try_on;
-    document.getElementById('p-orders-base').textContent  = `Store: ${s.total_orders} orders / last 24h`;
-    document.getElementById('p-revenue-base').textContent = `Store: ₹${s.total_revenue.toLocaleString('en-IN')} / last 24h`;
+    document.getElementById('p-orders-base').textContent  = `Store avg: ${s.total_orders} orders / day`;
+    document.getElementById('p-revenue-base').textContent = `Store avg: ₹${s.total_revenue.toLocaleString('en-IN')} / day`;
 
-  } catch {
+  } catch (err) {
+    console.error('⚠️ Predicted impact error:', err.message);
     ['p-orders','p-revenue','p-users','p-tryons','p-rpt'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.textContent = '—';
+      if (el) el.textContent = '0';
     });
-    const el = document.getElementById('p-orders-base');
-    if (el) el.textContent = 'Sync orders first to see predictions';
+    const base = document.getElementById('p-orders-base');
+    if (base) base.textContent = 'Sync orders to unlock predictions';
   }
 }
 
