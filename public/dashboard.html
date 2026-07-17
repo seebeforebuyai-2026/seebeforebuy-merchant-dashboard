@@ -10,17 +10,24 @@
 
   /* Header */
   .header {
-    background: linear-gradient(135deg, #329580 0%, #245b62 100%);
-    color: white; padding: 0 24px; height: 64px;
+    background: #fff;
+    color: black; padding: 0 24px; height: 64px;
     display: flex; align-items: center; justify-content: space-between;
   }
   .header .brand { font-size: 18px; font-weight: 700; }
+  .brand img{
+    width:86px;
+  }
   .header .shop-info { font-size: 13px; opacity: 0.85; }
-  .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-  .logout-btn:hover { background: rgba(255,255,255,0.3); }
+  .logout-btn { background:linear-gradient(135deg, #329580 0%, #245b62 100%); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .logout-btn:hover { background: linear-gradient(135deg, #329580 0%, #245b62 10%);}
 
+ /* dashboard-panel */
+.dashboard-panel{
+    display:flex;
+  }
   /* Tabs */
-  .tabs { background: white; border-bottom: 1px solid #E5E7EB; padding: 0 24px; display: flex; gap: 0; }
+  .tabs { background: white; border-bottom: 1px solid #E5E7EB; padding: 0 24px;  gap: 0; }
   .tab {
     padding: 16px 24px; font-size: 15px; font-weight: 500; color: #6B7280;
     border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent;
@@ -112,6 +119,7 @@
 
   .hidden { display: none !important; }
   .loading { text-align: center; padding: 48px; color: #6B7280; font-size: 15px; }
+  
 </style>
 </head>
 <body>
@@ -119,11 +127,16 @@
 <!-- Header -->
 <div class="header">
   <div>
-    <div class="brand">🛍️ See Before Buy AI</div>
-    <div class="shop-info" id="shop-info">Loading...</div>
+  <div class="brand"><img src="https://cdn.shopify.com/s/files/1/0792/0723/5783/files/download_6.png?v=1782548312" alt="See Before Buy" ></div> 
   </div>
   <button class="logout-btn" onclick="logout()">Sign Out</button>
 </div>
+<div>
+
+
+<div class="dashboard-panel">
+
+
 
 <!-- Tabs -->
 <div class="tabs">
@@ -182,8 +195,47 @@
       </div>
     </div>
 
+    <!-- Predicted Impact Section (based on last 24h store orders) -->
+    <div style="margin-top:28px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <div style="font-size:16px;font-weight:700;">🔮 Predicted Impact after 6 Months</div>
+        <span style="background:#EDE9FE;color:#5B21B6;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;">Based on last 24h store orders</span>
+      </div>
+      <p style="font-size:13px;color:#6B7280;margin-bottom:16px;">
+        If your store runs See Before Buy AI for 6 months, here's what your daily numbers could look like.
+        Calculated as 8% of your store's last 24h orders and revenue.
+      </p>
+      <div class="stats-grid" id="predicted-grid">
+        <div class="stat-card" style="border-top:3px solid #8B5CF6;">
+          <div class="label">Orders via App <span style="font-size:11px;color:#9CA3AF;">(8% of store)</span></div>
+          <div class="value" id="p-orders" style="color:#8B5CF6;">—</div>
+          <div class="sub" id="p-orders-base">Loading...</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #8B5CF6;">
+          <div class="label">Revenue via App <span style="font-size:11px;color:#9CA3AF;">(8% of store)</span></div>
+          <div class="value" id="p-revenue" style="color:#8B5CF6;">—</div>
+          <div class="sub" id="p-revenue-base">Loading...</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #8B5CF6;">
+          <div class="label">Unique Users <span style="font-size:11px;color:#9CA3AF;">(orders ÷ 2%)</span></div>
+          <div class="value" id="p-users" style="color:#8B5CF6;">—</div>
+          <div class="sub">Per day estimate</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #8B5CF6;">
+          <div class="label">Try-Ons Generated <span style="font-size:11px;color:#9CA3AF;">(users × 1.7)</span></div>
+          <div class="value" id="p-tryons" style="color:#8B5CF6;">—</div>
+          <div class="sub">Per day estimate</div>
+        </div>
+        <div class="stat-card" style="border-top:3px solid #8B5CF6;">
+          <div class="label">Revenue per Try-On <span style="font-size:11px;color:#9CA3AF;">(revenue ÷ try-ons)</span></div>
+          <div class="value" id="p-rpt" style="color:#8B5CF6;">—</div>
+          <div class="sub">Per try-on value</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Top Products -->
-    <div class="section-title">🏆 Top Products by Try-On</div>
+    <div style="font-size:16px;font-weight:700;margin:24px 0 12px;">🏆 Top Products by Try-On</div>
     <div class="products-table">
       <table>
         <thead><tr><th>#</th><th>Product</th><th>Try-Ons</th></tr></thead>
@@ -192,6 +244,7 @@
         </tbody>
       </table>
     </div>
+
   </div>
 </div>
 
@@ -250,11 +303,14 @@
   </div>
 </div>
 
+</div>
+
+
 <!-- Cashfree JS SDK -->
 <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 <script>
 const token = localStorage.getItem('sbb_token');
-if (!token) window.location.href = '/';
+if (!token) window.location.href = '/'; 
 
 let dashData = null;
 
@@ -313,8 +369,47 @@ async function loadDashboard() {
     document.getElementById('dash-loading').classList.add('hidden');
     document.getElementById('dash-content').classList.remove('hidden');
 
+    // Load predicted impact in background (non-blocking)
+    loadPredictedImpact(dashData.shop.domain);
+
   } catch (err) {
     document.getElementById('dash-loading').textContent = 'Failed to load. Please refresh.';
+  }
+}
+
+// ── Load predicted impact ─────────────────────────────────────────────────────
+async function loadPredictedImpact(shopDomain) {
+  try {
+    const res = await fetch(
+      `https://seebeforebuy.in/api/shop-status/${shopDomain}/predicted-impact`
+    );
+    if (!res.ok) throw new Error('Failed to fetch predicted impact');
+    const data = await res.json();
+
+    const p = data.predicted;
+    const store = data.store_last_24h;
+    const currency = '₹';
+
+    document.getElementById('p-orders').textContent  = p.orders_via_app;
+    document.getElementById('p-revenue').textContent = currency + p.revenue_via_app.toLocaleString('en-IN');
+    document.getElementById('p-users').textContent   = p.unique_users.toLocaleString('en-IN');
+    document.getElementById('p-tryons').textContent  = p.try_ons_generated.toLocaleString('en-IN');
+    document.getElementById('p-rpt').textContent     = currency + p.revenue_per_try_on;
+
+    document.getElementById('p-orders-base').textContent =
+      `Store had ${store.total_orders} orders in last 24h`;
+    document.getElementById('p-revenue-base').textContent =
+      `Store revenue ${currency}${store.total_revenue.toLocaleString('en-IN')} in last 24h`;
+
+  } catch (err) {
+    console.warn('Predicted impact unavailable:', err.message);
+    // Show fallback — not a critical error
+    ['p-orders','p-revenue','p-users','p-tryons','p-rpt'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = 'N/A';
+    });
+    const base = document.getElementById('p-orders-base');
+    if (base) base.textContent = 'Sync orders to see predictions';
   }
 }
 
@@ -373,7 +468,7 @@ function logout() {
 }
 
 // Load on mount
-loadDashboard();
+ loadDashboard();
 </script>
 </body>
 </html>
