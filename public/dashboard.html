@@ -675,18 +675,18 @@
           <div class="plans-grid">
             <div class="plan-card">
               <div class="plan-icon">⚡</div>
-              <div class="plan-name">Starter</div>
+              <div class="plan-name">Basic</div>
               <div class="plan-price">₹2,999 <span>/30 days</span></div>
-              <div class="plan-images">300 AI Try-Ons</div>
+              <div class="plan-images">500 AI Try-Ons</div>
               <div class="plan-validity">Valid for 30 days</div>
               <ul>
-                <li>300 image generations</li>
+                <li>500 image generations</li>
                 <li>All product categories</li>
                 <li>Dashboard analytics</li>
                 <li>Email support</li>
               </ul>
               <button class="buy-btn" onclick="buyPlan('starter', this)">
-                Buy Starter — ₹500
+                Buy Starter — ₹2,999
               </button>
             </div>
 
@@ -821,19 +821,16 @@
           );
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-          const p = data.predicted;
+          const p = data.predicted;   // cumulative since install
           const s = data.store_last_24h;
-          document.getElementById("p-orders").textContent = p.orders_via_app;
-          document.getElementById("p-revenue").textContent =
-            "₹" + p.revenue_via_app.toLocaleString("en-IN");
-          document.getElementById("p-users").textContent =
-            p.unique_users.toLocaleString("en-IN");
-          document.getElementById("p-tryons").textContent =
-            p.try_ons_generated.toLocaleString("en-IN");
-          document.getElementById("p-rpt").textContent =
-            "₹" + p.revenue_per_try_on;
+          const cycleDay = data.cycle_day || 1;
+          document.getElementById("p-orders").textContent = p.orders_via_app.toLocaleString("en-IN");
+          document.getElementById("p-revenue").textContent = "₹" + p.revenue_via_app.toLocaleString("en-IN");
+          document.getElementById("p-users").textContent = p.unique_users.toLocaleString("en-IN");
+          document.getElementById("p-tryons").textContent = p.try_ons_generated.toLocaleString("en-IN");
+          document.getElementById("p-rpt").textContent = "₹" + p.revenue_per_try_on;
           document.getElementById("p-orders-base").textContent =
-            `Store: ${s.total_orders} orders / last 24h`;
+            `Store: ${s.total_orders} orders / last 24h · Day ${cycleDay}/30`;
           document.getElementById("p-revenue-base").textContent =
             `Store: ₹${s.total_revenue.toLocaleString("en-IN")} / last 24h`;
         } catch (err) {
