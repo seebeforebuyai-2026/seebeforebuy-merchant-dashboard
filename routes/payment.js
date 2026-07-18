@@ -19,9 +19,9 @@ Cashfree.XEnvironment  = process.env.CASHFREE_ENV === 'PROD'
 
 // Plans config
 const PLANS = {
-  starter: { amount: 500,  images: 300,  label: 'Starter' },
-  growth:  { amount: 1000, images: 1000, label: 'Growth'  },
-  pro:     { amount: 2000, images: 3000, label: 'Pro'      },
+  starter: { amount: 2999,  images: 500,  label: 'Basic' },
+  growth:  { amount: 4999, images: 1000, label: 'Growth'  },
+  pro:     { amount: 29999, images: "Unlimited", label: 'Scale'      },
 };
 
 // ── POST /api/payment/create-order ────────────────────────────────────────────

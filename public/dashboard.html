@@ -596,17 +596,50 @@
 
             <!-- Predicted Impact -->
             <div class="predicted-section">
-              <div class="predicted-header" style="justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                  <span class="section-title" style="margin:0;">🔮 Performance Matrix</span>
-                  <span class="predicted-badge" id="p-data-source-badge">Based on store orders</span>
+              <div
+                class="predicted-header"
+                style="justify-content: space-between"
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                  "
+                >
+                  <span class="section-title" style="margin: 0"
+                    >🔮 Performance Matrix</span
+                  >
+                  <span class="predicted-badge" id="p-data-source-badge"
+                    >Based on store orders</span
+                  >
                 </div>
-                <button id="refresh-orders-btn" onclick="refreshOrdersSnapshot()" style="background:linear-gradient(135deg,#329580 0%,#245b62 100%);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                <button
+                  id="refresh-orders-btn"
+                  onclick="refreshOrdersSnapshot()"
+                  style="
+                    background: linear-gradient(
+                      135deg,
+                      #329580 0%,
+                      #245b62 100%
+                    );
+                    color: white;
+                    border: none;
+                    padding: 8px 16px;
+                    border-radius: 8px;
+                    font-size: 13px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    white-space: nowrap;
+                  "
+                >
                   🔄 Refresh Data
                 </button>
               </div>
               <p class="predicted-desc" id="p-desc">
-                Predicted daily impact of See Before Buy AI on your store. Click "Refresh Data" to fetch latest store orders.
+                Predicted daily impact of See Before Buy AI on your store. Click
+                "Refresh Data" to fetch latest store orders.
               </p>
               <div class="predicted-grid">
                 <div class="p-card">
@@ -675,16 +708,24 @@
           <div id="current-plan-note" class="current-plan-note hidden"></div>
           <div class="plans-grid">
             <div class="plan-card">
-              <div class="plan-icon">⚡</div>
               <div class="plan-name">Basic</div>
               <div class="plan-price">₹2,999 <span>/30 days</span></div>
               <div class="plan-images">500 AI Try-Ons</div>
               <div class="plan-validity">Valid for 30 days</div>
               <ul>
-                <li>500 image generations</li>
-                <li>All product categories</li>
-                <li>Dashboard analytics</li>
-                <li>Email support</li>
+                <li>Try-Ons Generated</li>
+                <li>Unique Users</li>
+                <li>Add to Cart (via Try Look)</li>
+                <li>Add to Cart Rate vs Store Baseline</li>
+                <li>Revenue Attributed to SBB</li>
+                <li>Total Orders from SBB</li>
+                <li>Revenue per Try-On</li>
+                <li>Avg Try-Ons per Product</li>
+                <li>Top 5 Products by Try-On</li>
+                <li>Everything in Basic</li>
+                <li>Social sharing + download for shoppers</li>
+                <li>AI try-on — Clothing, Watches &amp; Jewellery</li>
+                <li>Priority email support</li>
               </ul>
               <button class="buy-btn" onclick="buyPlan('starter', this)">
                 Buy Starter — ₹2,999
@@ -692,36 +733,52 @@
             </div>
 
             <div class="plan-card popular">
-              <div class="plan-icon">🚀</div>
               <div class="plan-name">Growth</div>
               <div class="plan-price">₹4,999 <span>/30 days</span></div>
               <div class="plan-images">1,000 AI Try-Ons</div>
               <div class="plan-validity">Valid for 30 days</div>
               <ul>
-                <li>1,000 image generations</li>
-                <li>All product categories</li>
-                <li>Dashboard analytics</li>
-                <li>Priority support</li>
+               <li>Try-Ons Generated</li>
+                <li>Unique Users</li>
+                <li>Add to Cart (via Try Look)</li>
+                <li>Add to Cart Rate vs Store Baseline</li>
+                <li>Revenue Attributed to SBB</li>
+                <li>Total Orders from SBB</li>
+                <li>Revenue per Try-On</li>
+                <li>Avg Try-Ons per Product</li>
+                <li>Top 5 Products by Try-On</li>
+                <li>Everything in Basic</li>
+                <li>Social sharing + download for shoppers</li>
+                <li>AI try-on — Clothing, Watches &amp; Jewellery</li>
+                <li>Priority email support</li>
               </ul>
               <button class="buy-btn" onclick="buyPlan('growth', this)">
-                Buy Growth — ₹1,000
+                Buy Growth — ₹4,999
               </button>
             </div>
 
             <div class="plan-card">
-              <div class="plan-icon">👑</div>
-              <div class="plan-name">Pro</div>
-              <div class="plan-price">₹2,000 <span>/30 days</span></div>
-              <div class="plan-images">3,000 AI Try-Ons</div>
+              <div class="plan-name">Scale</div>
+              <div class="plan-price">₹29,999 <span>/30 days</span></div>
+              <div class="plan-images">Unlimited AI Try-Ons</div>
               <div class="plan-validity">Valid for 30 days</div>
               <ul>
-                <li>3,000 image generations</li>
-                <li>All product categories</li>
-                <li>Advanced analytics</li>
-                <li>Dedicated support</li>
+               <li>Try-Ons Generated</li>
+                <li>Unique Users</li>
+                <li>Add to Cart (via Try Look)</li>
+                <li>Add to Cart Rate vs Store Baseline</li>
+                <li>Revenue Attributed to SBB</li>
+                <li>Total Orders from SBB</li>
+                <li>Revenue per Try-On</li>
+                <li>Avg Try-Ons per Product</li>
+                <li>Top 5 Products by Try-On</li>
+                <li>Everything in Basic</li>
+                <li>Social sharing + download for shoppers</li>
+                <li>AI try-on — Clothing, Watches &amp; Jewellery</li>
+                <li>Priority email support</li>
               </ul>
               <button class="buy-btn" onclick="buyPlan('pro', this)">
-                Buy Pro — ₹2,000
+                Buy Pro — ₹29,999
               </button>
             </div>
           </div>
@@ -755,9 +812,9 @@
 
           const planLabels = {
             free: "Free Plan",
-            starter: "Starter Plan",
+            starter: "Basic Plan",
             growth: "Growth Plan",
-            pro: "Pro Plan",
+            pro: "Scale Plan",
           };
           document.getElementById("plan-name").textContent =
             planLabels[data.shop.plan] || "Free Plan";
@@ -822,14 +879,19 @@
           );
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
-          const p = data.predicted;   // cumulative since install
+          const p = data.predicted; // cumulative since install
           const s = data.store_last_24h;
           const cycleDay = data.cycle_day || 1;
-          document.getElementById("p-orders").textContent = p.orders_via_app.toLocaleString("en-IN");
-          document.getElementById("p-revenue").textContent = "₹" + p.revenue_via_app.toLocaleString("en-IN");
-          document.getElementById("p-users").textContent = p.unique_users.toLocaleString("en-IN");
-          document.getElementById("p-tryons").textContent = p.try_ons_generated.toLocaleString("en-IN");
-          document.getElementById("p-rpt").textContent = "₹" + p.revenue_per_try_on;
+          document.getElementById("p-orders").textContent =
+            p.orders_via_app.toLocaleString("en-IN");
+          document.getElementById("p-revenue").textContent =
+            "₹" + p.revenue_via_app.toLocaleString("en-IN");
+          document.getElementById("p-users").textContent =
+            p.unique_users.toLocaleString("en-IN");
+          document.getElementById("p-tryons").textContent =
+            p.try_ons_generated.toLocaleString("en-IN");
+          document.getElementById("p-rpt").textContent =
+            "₹" + p.revenue_per_try_on;
           document.getElementById("p-orders-base").textContent =
             `Store: ${s.total_orders} orders / last 24h · Day ${cycleDay}/30`;
           document.getElementById("p-revenue-base").textContent =
@@ -837,8 +899,13 @@
           // Update badge with data source
           const badge = document.getElementById("p-data-source-badge");
           if (badge) {
-            const src = s.data_source || 'estimate';
-            badge.textContent = src === 'snapshot' ? '✅ From order sync' : src === 'shopify_live' ? '🔴 Live from Shopify' : '📊 Estimated';
+            const src = s.data_source || "estimate";
+            badge.textContent =
+              src === "snapshot"
+                ? "✅ From order sync"
+                : src === "shopify_live"
+                  ? "🔴 Live from Shopify"
+                  : "📊 Estimated";
           }
         } catch (err) {
           console.error("Predicted impact:", err.message);
@@ -864,15 +931,19 @@
         btn.textContent = "⏳ Fetching orders...";
 
         // Update all cards to loading state
-        ["p-orders","p-revenue","p-users","p-tryons","p-rpt"].forEach(id => {
-          const el = document.getElementById(id); if (el) el.textContent = "...";
-        });
-        document.getElementById("p-orders-base").textContent = "Fetching store orders from Shopify...";
+        ["p-orders", "p-revenue", "p-users", "p-tryons", "p-rpt"].forEach(
+          (id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = "...";
+          },
+        );
+        document.getElementById("p-orders-base").textContent =
+          "Fetching store orders from Shopify...";
 
         try {
           const res = await fetch(
             `https://seebeforebuy.in/api/shop-status/${shopDomain}/fetch-orders-snapshot`,
-            { method: "POST", headers: { "Content-Type": "application/json" } }
+            { method: "POST", headers: { "Content-Type": "application/json" } },
           );
           const data = await res.json();
 
@@ -887,14 +958,21 @@
           // Reload predicted impact with fresh data
           await loadPredictedImpact(shopDomain);
           btn.textContent = "✅ Updated!";
-          setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
-
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.disabled = false;
+          }, 2000);
         } catch (err) {
           console.error("Refresh error:", err.message);
           document.getElementById("p-orders-base").textContent =
-            "Error: " + err.message + " — Please sync orders in the Shopify app first.";
+            "Error: " +
+            err.message +
+            " — Please sync orders in the Shopify app first.";
           btn.textContent = "❌ Failed";
-          setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 3000);
+          setTimeout(() => {
+            btn.textContent = original;
+            btn.disabled = false;
+          }, 3000);
         }
       }
 
