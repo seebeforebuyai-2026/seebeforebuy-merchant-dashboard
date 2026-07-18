@@ -596,41 +596,42 @@
 
             <!-- Predicted Impact -->
             <div class="predicted-section">
-              <div class="predicted-header">
-                <span class="section-title" style="margin: 0"
-                  >Performace Matrix</span
-                >
-                <span class="predicted-badge"
-                  >Your Revenue</span
-                >
+              <div class="predicted-header" style="justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <span class="section-title" style="margin:0;">🔮 Performance Matrix</span>
+                  <span class="predicted-badge" id="p-data-source-badge">Based on store orders</span>
+                </div>
+                <button id="refresh-orders-btn" onclick="refreshOrdersSnapshot()" style="background:linear-gradient(135deg,#329580 0%,#245b62 100%);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                  🔄 Refresh Data
+                </button>
               </div>
-              <p class="predicted-desc">
-               it can be little bit late to update the data due to high tranfic rate.
+              <p class="predicted-desc" id="p-desc">
+                Predicted daily impact of See Before Buy AI on your store. Click "Refresh Data" to fetch latest store orders.
               </p>
               <div class="predicted-grid">
                 <div class="p-card">
-                  <div class="label">Orders</div>
-                  <div class="formula">Total Number of Orders</div>
+                  <div class="label">Orders via App</div>
+                  <div class="formula">8% of store orders</div>
                   <div class="value" id="p-orders">—</div>
-                  <div class="sub" id="p-orders-base">Loading...</div>
+                  <div class="sub" id="p-orders-base">Click Refresh Data</div>
                 </div>
                 <div class="p-card">
-                  <div class="label">Revenue</div>
-                  <div class="formula">Real revenue</div>
+                  <div class="label">Revenue via App</div>
+                  <div class="formula">Real order revenue</div>
                   <div class="value" id="p-revenue">—</div>
-                  <div class="sub" id="p-revenue-base">Loading...</div>
+                  <div class="sub" id="p-revenue-base">Click Refresh Data</div>
                 </div>
                 <div class="p-card">
                   <div class="label">Unique Users</div>
-                  <div class="formula">Unique Users by session id</div>
+                  <div class="formula">Orders ÷ 2%</div>
                   <div class="value" id="p-users">—</div>
-                  <div class="sub"> estimate</div>
+                  <div class="sub">Per day estimate</div>
                 </div>
                 <div class="p-card">
                   <div class="label">Try-Ons Generated</div>
-                  <div class="formula">image generated</div>
+                  <div class="formula">Unique users × 1.7</div>
                   <div class="value" id="p-tryons">—</div>
-                  <div class="sub">try on</div>
+                  <div class="sub">Per day estimate</div>
                 </div>
                 <div class="p-card">
                   <div class="label">Revenue per Try-On</div>
@@ -833,6 +834,12 @@
             `Store: ${s.total_orders} orders / last 24h · Day ${cycleDay}/30`;
           document.getElementById("p-revenue-base").textContent =
             `Store: ₹${s.total_revenue.toLocaleString("en-IN")} / last 24h`;
+          // Update badge with data source
+          const badge = document.getElementById("p-data-source-badge");
+          if (badge) {
+            const src = s.data_source || 'estimate';
+            badge.textContent = src === 'snapshot' ? '✅ From order sync' : src === 'shopify_live' ? '🔴 Live from Shopify' : '📊 Estimated';
+          }
         } catch (err) {
           console.error("Predicted impact:", err.message);
           ["p-orders", "p-revenue", "p-users", "p-tryons", "p-rpt"].forEach(
@@ -842,7 +849,52 @@
             },
           );
           const b = document.getElementById("p-orders-base");
-          if (b) b.textContent = "Sync orders to unlock predictions";
+          if (b) b.textContent = "Click 'Refresh Data' to load store orders";
+        }
+      }
+
+      // ── Refresh orders snapshot (fetches ALL store orders from Shopify) ──────
+      async function refreshOrdersSnapshot() {
+        const btn = document.getElementById("refresh-orders-btn");
+        const shopDomain = dashData?.shop?.domain;
+        if (!shopDomain) return;
+
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "⏳ Fetching orders...";
+
+        // Update all cards to loading state
+        ["p-orders","p-revenue","p-users","p-tryons","p-rpt"].forEach(id => {
+          const el = document.getElementById(id); if (el) el.textContent = "...";
+        });
+        document.getElementById("p-orders-base").textContent = "Fetching store orders from Shopify...";
+
+        try {
+          const res = await fetch(
+            `https://seebeforebuy.in/api/shop-status/${shopDomain}/fetch-orders-snapshot`,
+            { method: "POST", headers: { "Content-Type": "application/json" } }
+          );
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Failed to fetch orders");
+          }
+
+          const snap = data.snapshot;
+          document.getElementById("p-orders-base").textContent =
+            `✅ ${snap.total_orders} orders over ${snap.days_covered} days synced`;
+
+          // Reload predicted impact with fresh data
+          await loadPredictedImpact(shopDomain);
+          btn.textContent = "✅ Updated!";
+          setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2000);
+
+        } catch (err) {
+          console.error("Refresh error:", err.message);
+          document.getElementById("p-orders-base").textContent =
+            "Error: " + err.message + " — Please sync orders in the Shopify app first.";
+          btn.textContent = "❌ Failed";
+          setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 3000);
         }
       }
 
