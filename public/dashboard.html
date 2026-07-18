@@ -467,6 +467,30 @@
           padding: 16px;
         }
       }
+
+      /* ==========================================
+   TEMPORARILY HIDE DASHBOARD SECTIONS
+   ========================================== */
+
+/* Hide "Your Current Metrics" heading */
+.section-title:nth-of-type(1) {
+    display: none !important;
+}
+
+/* Hide metrics cards */
+.stats-grid {
+    display: none !important;
+}
+
+/* Hide "Top Products by Try-On" heading */
+.products-table {
+    display: none !important;
+}
+
+/* Hide the heading just before the products table */
+.products-table + * {
+    display: none;
+}
     </style>
   </head>
   <body>
@@ -494,7 +518,7 @@
           id="nav-dashboard"
           onclick="showTab('dashboard', this)"
         >
-          <span class="icon">📊</span>
+          <span class="icon"></span>
           <span>Dashboard</span>
         </button>
         <button
@@ -502,7 +526,7 @@
           id="nav-plans"
           onclick="showTab('plans', this)"
         >
-          <span class="icon">💳</span>
+          <span class="icon"></span>
           <span>Plans & Billing</span>
         </button>
       </nav>
@@ -570,7 +594,7 @@
             </div>
 
             <!-- Current Metrics -->
-            <div class="section-title">📈 Your Current Metrics</div>
+            <div class="section-title"> Your Current Metrics</div>
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="label">Try-Ons Generated</div>
@@ -609,10 +633,10 @@
                   "
                 >
                   <span class="section-title" style="margin: 0"
-                    >🔮 Performance Matrix</span
+                    > Performance Matrix</span
                   >
                   <span class="predicted-badge" id="p-data-source-badge"
-                    >Based on store orders</span
+                    >Revenue</span
                   >
                 </div>
                 <button
@@ -634,49 +658,48 @@
                     white-space: nowrap;
                   "
                 >
-                  🔄 Refresh Data
+                   Refresh Data
                 </button>
               </div>
               <p class="predicted-desc" id="p-desc">
-                Predicted daily impact of See Before Buy AI on your store. Click
-                "Refresh Data" to fetch latest store orders.
+                Track your AI try-on performance
               </p>
               <div class="predicted-grid">
                 <div class="p-card">
-                  <div class="label">Orders via App</div>
-                  <div class="formula">8% of store orders</div>
+                  <div class="label">Orders</div>
+                  <div class="formula">Total orders</div>
                   <div class="value" id="p-orders">—</div>
-                  <div class="sub" id="p-orders-base">Click Refresh Data</div>
+                  <!-- <div class="sub" id="p-orders-base">Click Refresh Data</div> -->
                 </div>
                 <div class="p-card">
-                  <div class="label">Revenue via App</div>
+                  <div class="label">Revenue</div>
                   <div class="formula">Real order revenue</div>
                   <div class="value" id="p-revenue">—</div>
-                  <div class="sub" id="p-revenue-base">Click Refresh Data</div>
+                  <!-- <div class="sub" id="p-revenue-base">Click Refresh Data</div> -->
                 </div>
                 <div class="p-card">
                   <div class="label">Unique Users</div>
-                  <div class="formula">Orders ÷ 2%</div>
+                  <!-- <div class="formula">Orders ÷ 2%</div> -->
                   <div class="value" id="p-users">—</div>
-                  <div class="sub">Per day estimate</div>
+                  <!-- <div class="sub">Per day estimate</div> -->
                 </div>
                 <div class="p-card">
                   <div class="label">Try-Ons Generated</div>
-                  <div class="formula">Unique users × 1.7</div>
+                  <!-- <div class="formula">Unique users × 1.7</div> -->
                   <div class="value" id="p-tryons">—</div>
-                  <div class="sub">Per day estimate</div>
+                  <!-- <div class="sub">Per day estimate</div> -->
                 </div>
                 <div class="p-card">
                   <div class="label">Revenue per Try-On</div>
-                  <div class="formula">Revenue ÷ Try-ons</div>
+                  <!-- <div class="formula">Revenue ÷ Try-ons</div> -->
                   <div class="value" id="p-rpt">—</div>
-                  <div class="sub">Per try-on value</div>
+                  <!-- <div class="sub">Per try-on value</div> -->
                 </div>
               </div>
             </div>
 
             <!-- Top Products -->
-            <div class="section-title">🏆 Top Products by Try-On</div>
+            <div class="section-title"> Top Products by Try-On</div>
             <div class="products-table">
               <table>
                 <thead>
