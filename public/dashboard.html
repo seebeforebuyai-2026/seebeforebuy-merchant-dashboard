@@ -699,7 +699,7 @@
             </div>
 
             <!-- Top Products -->
-            <div class="section-title"> Top Products by Try-On</div>
+            <!-- <div class="section-title"> Top Products by Try-On</div> -->
             <div class="products-table">
               <table>
                 <thead>
@@ -915,31 +915,31 @@
             p.try_ons_generated.toLocaleString("en-IN");
           document.getElementById("p-rpt").textContent =
             "₹" + p.revenue_per_try_on;
-          document.getElementById("p-orders-base").textContent =
-            `Store: ${s.total_orders} orders / last 24h · Day ${cycleDay}/30`;
-          document.getElementById("p-revenue-base").textContent =
-            `Store: ₹${s.total_revenue.toLocaleString("en-IN")} / last 24h`;
+          // document.getElementById("p-orders-base").textContent =
+          //   `Store: ${s.total_orders} orders / last 24h · Day ${cycleDay}/30`;
+          // document.getElementById("p-revenue-base").textContent =
+          //   `Store: ₹${s.total_revenue.toLocaleString("en-IN")} / last 24h`;
           // Update badge with data source
-          const badge = document.getElementById("p-data-source-badge");
-          if (badge) {
-            const src = s.data_source || "estimate";
-            badge.textContent =
-              src === "snapshot"
-                ? "✅ From order sync"
-                : src === "shopify_live"
-                  ? "🔴 Live from Shopify"
-                  : "📊 Estimated";
-          }
+          // const badge = document.getElementById("p-data-source-badge");
+          // if (badge) {
+          //   const src = s.data_source || "estimate";
+          //   badge.textContent =
+          //     src === "snapshot"
+          //       ? "✅ From order sync"
+          //       : src === "shopify_live"
+          //         ? "🔴 Live from Shopify"
+          //         : "📊 Estimated";
+          // }
         } catch (err) {
-          console.error("Predicted impact:", err.message);
+          console.error("Predicted impact:", err);
           ["p-orders", "p-revenue", "p-users", "p-tryons", "p-rpt"].forEach(
             (id) => {
               const el = document.getElementById(id);
               if (el) el.textContent = "0";
             },
           );
-          const b = document.getElementById("p-orders-base");
-          if (b) b.textContent = "Click 'Refresh Data' to load store orders";
+          // const b = document.getElementById("p-orders-base");
+          // if (b) b.textContent = "Click 'Refresh Data' to load store orders";
         }
       }
 
@@ -960,8 +960,8 @@
             if (el) el.textContent = "...";
           },
         );
-        document.getElementById("p-orders-base").textContent =
-          "Fetching store orders from Shopify...";
+        // document.getElementById("p-orders-base").textContent =
+        //   "Fetching store orders from Shopify...";
 
         try {
           const res = await fetch(
@@ -975,8 +975,8 @@
           }
 
           const snap = data.snapshot;
-          document.getElementById("p-orders-base").textContent =
-            `✅ ${snap.total_orders} orders over ${snap.days_covered} days synced`;
+          // document.getElementById("p-orders-base").textContent =
+          //   `✅ ${snap.total_orders} orders over ${snap.days_covered} days synced`;
 
           // Reload predicted impact with fresh data
           await loadPredictedImpact(shopDomain);
@@ -987,10 +987,10 @@
           }, 2000);
         } catch (err) {
           console.error("Refresh error:", err.message);
-          document.getElementById("p-orders-base").textContent =
-            "Error: " +
-            err.message +
-            " — Please sync orders in the Shopify app first.";
+          // document.getElementById("p-orders-base").textContent =
+          //   "Error: " +
+          //   err.message +
+          //   " — Please sync orders in the Shopify app first.";
           btn.textContent = "❌ Failed";
           setTimeout(() => {
             btn.textContent = original;
