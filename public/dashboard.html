@@ -237,111 +237,9 @@
         gap: 6px;
       }
 
-      /* ── Date Range Selector ── */
-      .date-range-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-      }
-      .date-range-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: #6b7280;
-        margin-right: 4px;
-      }
-      .date-range-btn {
-        padding: 7px 16px;
-        border-radius: 20px;
-        border: 1.5px solid #e5e7eb;
-        background: #fff;
-        color: #374151;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.15s;
-      }
-      .date-range-btn:hover {
-        border-color: #329580;
-        color: #329580;
-      }
-      .date-range-btn.active {
-        background: linear-gradient(135deg, #329580 0%, #245b62 100%);
-        border-color: transparent;
-        color: #fff;
-        font-weight: 600;
-      }
-      .date-range-note {
-        font-size: 11px;
-        color: #9ca3af;
-        margin-left: 4px;
-      }
 
-      /* ── Predicted section ── */
-      .predicted-section {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        padding: 20px;
-        margin-bottom: 24px;
-      }
-      .predicted-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 6px;
-        flex-wrap: wrap;
-      }
-      .predicted-badge {
-        background: #d1fae5;
-        color: #065f46;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 3px 10px;
-        border-radius: 20px;
-      }
-      .predicted-desc {
-        font-size: 13px;
-        color: #6b7280;
-        margin-bottom: 16px;
-        line-height: 1.5;
-      }
-      .predicted-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 12px;
-      }
-      .p-card {
-        background: #f0fdf4;
-        border: 1px solid #a7f3d0;
-        border-top: 3px solid #329580;
-        border-radius: 10px;
-        padding: 14px;
-      }
-      .p-card .label {
-        font-size: 11px;
-        color: #6b7280;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        margin-bottom: 4px;
-      }
-      .p-card .formula {
-        font-size: 10px;
-        color: #9ca3af;
-        margin-bottom: 8px;
-      }
-      .p-card .value {
-        font-size: 22px;
-        font-weight: 700;
-        color: #065f46;
-      }
-      .p-card .sub {
-        font-size: 11px;
-        color: #6b7280;
-        margin-top: 4px;
-      }
+
+
 
       /* ── Products table ── */
       .products-table {
@@ -659,16 +557,6 @@
               </div>
             </div>
 
-            <!-- Date Range Selector -->
-            <div class="date-range-bar">
-              <span class="date-range-label">📅 Period:</span>
-              <button class="date-range-btn" id="btn-7" onclick="selectDateRange(7)">Last 7 Days</button>
-              <button class="date-range-btn active" id="btn-30" onclick="selectDateRange(30)">Last 30 Days</button>
-              <button class="date-range-btn" id="btn-90" onclick="selectDateRange(90)">Last 90 Days</button>
-              <span class="date-range-note" id="date-range-note">Showing data for last 30 days</span>
-            </div>
-
-          
             <!-- Top Products -->
             <div class="section-title"> Top Products by Try-On</div> 
             <div class="products-table">
@@ -788,22 +676,6 @@
       const token = localStorage.getItem("sbb_token");
       if (!token) window.location.href = "/";
       let dashData = null;
-      let selectedDays = 30; // default
-
-      function selectDateRange(days) {
-        selectedDays = days;
-        // Update button states
-        [7, 30, 90].forEach(d => {
-          const btn = document.getElementById(`btn-${d}`);
-          if (btn) btn.classList.toggle('active', d === days);
-        });
-        const note = document.getElementById('date-range-note');
-        if (note) note.textContent = `Showing data for last ${days} days`;
-        // Reload predicted impact with new range
-        if (dashData?.shop?.domain) {
-          loadPredictedImpact(dashData.shop.domain);
-        }
-      }
 
       async function loadDashboard() {
         try {
@@ -874,7 +746,6 @@
           document.getElementById("dash-loading").classList.add("hidden");
           document.getElementById("dash-content").classList.remove("hidden");
 
-          loadPredictedImpact(data.shop.domain);
         } catch (err) {
           document.getElementById("dash-loading").textContent =
             "Failed to load. Please refresh.";
@@ -882,62 +753,6 @@
         }
       }
 
-
-      // ── Refresh orders snapshot (fetches ALL store orders from Shopify) ──────
-      async function refreshOrdersSnapshot() {
-        const btn = document.getElementById("refresh-orders-btn");
-        const shopDomain = dashData?.shop?.domain;
-        if (!shopDomain) return;
-
-        const original = btn.textContent;
-        btn.disabled = true;
-        btn.textContent = "⏳ Fetching orders...";
-
-        // Update all cards to loading state
-        ["p-orders", "p-revenue", "p-users", "p-tryons", "p-rpt"].forEach(
-          (id) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = "...";
-          },
-        );
-        document.getElementById("p-orders-base").textContent =
-          "Fetching store orders from Shopify...";
-
-        try {
-          const res = await fetch(
-            `https://seebeforebuy.in/api/shop-status/${shopDomain}/fetch-orders-snapshot`,
-            { method: "POST", headers: { "Content-Type": "application/json" } },
-          );
-          const data = await res.json();
-
-          if (!res.ok) {
-            throw new Error(data.error || "Failed to fetch orders");
-          }
-
-          const snap = data.snapshot;
-          document.getElementById("p-orders-base").textContent =
-            `✅ ${snap.total_orders} orders over ${snap.days_covered} days synced`;
-
-          // Reload predicted impact with fresh data
-          await loadPredictedImpact(shopDomain);
-          btn.textContent = "✅ Updated!";
-          setTimeout(() => {
-            btn.textContent = original;
-            btn.disabled = false;
-          }, 2000);
-        } catch (err) {
-          console.error("Refresh error:", err.message);
-          document.getElementById("p-orders-base").textContent =
-            "Error: " +
-            err.message +
-            " — Please sync orders in the Shopify app first.";
-          btn.textContent = "❌ Failed";
-          setTimeout(() => {
-            btn.textContent = original;
-            btn.disabled = false;
-          }, 3000);
-        }
-      }
 
       async function buyPlan(planId, btn) {
         const original = btn.textContent;
