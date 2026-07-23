@@ -61,6 +61,12 @@ router.get('/', requireAuth, async (req, res) => {
         unique_users: data.metrics?.unique_users || 0,
         add_to_cart: data.metrics?.add_to_cart_count || 0,
         add_to_cart_rate: data.metrics?.add_to_cart_rate || 0,
+        total_revenue: data.metrics?.total_revenue ?? null,
+        total_orders: data.metrics?.total_orders ?? null,
+        revenue_per_try_on: data.metrics?.revenue_per_try_on ?? null,
+        avg_try_on_per_product: data.metrics?.avg_try_on_per_product ?? null,
+        credit_remaining: data.metrics?.credit_remaining ?? null,
+        credit_used: data.metrics?.credit_used ?? null,
       },
       top_products: topProducts,
     });
