@@ -510,7 +510,7 @@
             </div>
 
             <!-- Current Metrics -->
-            <div class="section-title"> Your Current Metrics</div>
+            <div class="section-title">📊 Your Current Metrics</div>
             <div class="stats-grid">
               <div class="stat-card">
                 <div class="label">Try-Ons Generated</div>
@@ -531,6 +531,31 @@
                 <div class="label">Conversion Rate</div>
                 <div class="value" id="m-rate">0%</div>
                 <div class="sub">Try-on → Cart</div>
+              </div>
+            </div>
+
+            <!-- Revenue Metrics -->
+            <div class="section-title">💰 Revenue & Orders</div>
+            <div class="stats-grid">
+              <div class="stat-card" style="border-top: 3px solid #329580;">
+                <div class="label">Total Revenue</div>
+                <div class="value" id="m-revenue" style="color:#329580;">—</div>
+                <div class="sub">Real order revenue</div>
+              </div>
+              <div class="stat-card" style="border-top: 3px solid #329580;">
+                <div class="label">Total Orders</div>
+                <div class="value" id="m-orders" style="color:#329580;">—</div>
+                <div class="sub">Orders placed</div>
+              </div>
+              <div class="stat-card" style="border-top: 3px solid #329580;">
+                <div class="label">Revenue per Try-On</div>
+                <div class="value" id="m-rpt" style="color:#329580;">—</div>
+                <div class="sub">Revenue ÷ Try-ons</div>
+              </div>
+              <div class="stat-card" style="border-top: 3px solid #329580;">
+                <div class="label">Avg Try-On / Product</div>
+                <div class="value" id="m-avg" style="color:#329580;">—</div>
+                <div class="sub">Engagement per product</div>
               </div>
             </div>
 
@@ -703,6 +728,17 @@
             data.metrics.add_to_cart;
           document.getElementById("m-rate").textContent =
             data.metrics.add_to_cart_rate + "%";
+
+          // Revenue & Orders metrics
+          const rev = data.metrics.total_revenue;
+          document.getElementById("m-revenue").textContent =
+            rev != null ? "₹" + Number(rev).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+          document.getElementById("m-orders").textContent =
+            data.metrics.total_orders != null ? data.metrics.total_orders : "—";
+          document.getElementById("m-rpt").textContent =
+            data.metrics.revenue_per_try_on != null ? "₹" + data.metrics.revenue_per_try_on : "—";
+          document.getElementById("m-avg").textContent =
+            data.metrics.avg_try_on_per_product != null ? data.metrics.avg_try_on_per_product : "—";
 
           const tbody = document.getElementById("top-products-body");
           if (data.top_products && data.top_products.length > 0) {
